@@ -50,7 +50,7 @@ export default function Remote({ channelChangeHandeler, tvStateHandeler, isOn, s
 
 
   return (
-    <div className=" bg-white rounded-t-xl absolute bottom-0 right-0 mr-60 w-[100px] h-[280px] border border-zinc-500">
+    <div className=" bg-white z-50 rounded-t-xl absolute bottom-0 right-0 mr-60 w-[100px] h-[280px] border border-zinc-500">
       {/* tv on/off button  */}
       <button
         onClick={tvStateHandeler}
@@ -58,7 +58,9 @@ export default function Remote({ channelChangeHandeler, tvStateHandeler, isOn, s
       {/* number buttons  */}
       <div className=" grid grid-cols-3 gap-1 m-1">
         {numbtns?.map((itm, idx) => (
-          <button key={idx} onClick={() => setChannelNo(itm)}>{itm}</button>
+          <button
+          disabled={isOn ? false : true}
+          key={idx} onClick={() => setChannelNo(itm)}>{itm}</button>
         ))}
       </div>
       {/* channel ud down buttons  */}
