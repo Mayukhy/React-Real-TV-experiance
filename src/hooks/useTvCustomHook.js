@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 const useTvCustomHook = () => {
   const session_current_channel = JSON.parse(sessionStorage.getItem("currentchannel"))
   const tvState = JSON.parse(sessionStorage.getItem("powerState"))
+  const myCategories = JSON.parse(sessionStorage.getItem("mycategories"))
+  const more_Categories = JSON.parse(sessionStorage.getItem("morecategories"))
+  const categoryValue = JSON.parse(sessionStorage.getItem("categoryValue"))
   const [tvChannels, setTvChannels] = useState([
     {
       id: "id_1",
@@ -125,10 +128,27 @@ const useTvCustomHook = () => {
       videoUrl: "https://dummyurl.com/video20",
     },
   ]);
+  const [currentCategories, setCurrentCategories] = useState( myCategories? myCategories:[
+    "Animal",
+    "Entertainment",
+    "Horror",
+    "Happy New Year",
+  ]);
+  const [moreCategories, setMoreCategories] = useState(more_Categories?more_Categories:[
+    "Merry Christmas",
+    "Romance",
+    "Nature",
+    "Science",
+    "Music",
+    "News"
+  ]);
+  const [currentCategoryvalue,setCurrentCategoryValue] = useState(categoryValue?categoryValue:"All")
   const [currentChannel, setCurrentChannel] = useState(session_current_channel?session_current_channel:tvChannels[0]);
   const [currentChannelId, setCurrentChannelId] = useState(session_current_channel?session_current_channel?.id:"id_1");
   const [isOn,setIsOn] = useState(tvState?tvState:false)
   const [numInput,setNumInput] = useState(null)
+  const [isCateOn,setIsCateOn] = useState(false)
+  const [isCateEditable,setIsCateEditable] = useState(false)
   const numbtns = [1,2,3,4,5,6,7,8,9,0]
   useEffect(() => {
     // Your custom logic here
@@ -139,13 +159,23 @@ const useTvCustomHook = () => {
     setTvChannels,
     currentChannel,
     setCurrentChannel,
+    currentCategories,
+    setCurrentCategories,
+    moreCategories,
+    setMoreCategories,
     currentChannelId,
     setCurrentChannelId,
     isOn,
     setIsOn,
     numbtns,
     numInput,
-    setNumInput
+    setNumInput,
+    isCateOn,
+    setIsCateOn,
+    isCateEditable,
+    setIsCateEditable,
+    currentCategoryvalue,
+    setCurrentCategoryValue
   };
 };
 
