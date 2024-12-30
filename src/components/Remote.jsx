@@ -58,10 +58,18 @@ export default function Remote({ channelChangeHandeler, tvStateHandeler }) {
         className=" bg-rose-700 m-2 border border-transparent transition-all divide-neutral-300 hover:bg-rose-400 hover:border-red-700 w-[27px] h-[27px] rounded-full"
       ></button>
       {/* open category list btn  */}
-      <Tooltip variant="outlined" title="Choose category">
+      <Tooltip variant="outlined" title={isOn ? "Choose category" : ""}>
         <button
-          className=" border border-zinc-500 px-2 py-1 rounded-md flex justify-center items-center mx-auto"
-          onClick={() => setIsCateOn(true)}
+          className={`border border-zinc-500 px-2 py-1 rounded-md flex justify-center items-center mx-auto ${
+            isOn
+              ? " cursor-pointer opacity-100"
+              : " cursor-not-allowed opacity-50"
+          }`}
+          onClick={() => {
+            if (isOn) {
+              setIsCateOn(true);
+            }
+          }}
         >
           <CategoryIcon className=" scale-75" />{" "}
           <p className="text-xs">Category</p>
@@ -71,6 +79,11 @@ export default function Remote({ channelChangeHandeler, tvStateHandeler }) {
       <div className=" grid grid-cols-3 gap-1 m-1">
         {numbtns?.map((itm, idx) => (
           <button
+            className={`${
+              isOn
+                ? "cursor-pointer opacity-100"
+                : "cursor-not-allowed opacity-50"
+            }`}
             disabled={isOn ? false : true}
             key={idx}
             onClick={() => setChannelNo(itm)}
@@ -85,7 +98,11 @@ export default function Remote({ channelChangeHandeler, tvStateHandeler }) {
           <button
             disabled={isOn ? false : true}
             onClick={() => channelChangeHandeler("next")}
-            className=" p-1 border rounded-full border-zinc-600 hover:text-zinc-100 hover:bg-zinc-800 transition-all duration-200"
+            className={`p-1 border rounded-full border-zinc-600 hover:text-zinc-100 hover:bg-zinc-800 transition-all duration-200 ${
+              isOn
+                ? "cursor-pointer opacity-100"
+                : "cursor-not-allowed opacity-50"
+            }`}
           >
             <svg
               width="35"
@@ -107,7 +124,11 @@ export default function Remote({ channelChangeHandeler, tvStateHandeler }) {
           <button
             disabled={isOn ? false : true}
             onClick={() => channelChangeHandeler("prev")}
-            className=" p-1 border rounded-full hover:text-zinc-100 hover:bg-zinc-800 transition-all duration-200 border-zinc-600"
+            className={`p-1 border rounded-full border-zinc-600 hover:text-zinc-100 hover:bg-zinc-800 transition-all duration-200 ${
+              isOn
+                ? "cursor-pointer opacity-100"
+                : "cursor-not-allowed opacity-50"
+            }`}
           >
             <svg
               width="35"
