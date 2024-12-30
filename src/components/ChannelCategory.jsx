@@ -1,14 +1,13 @@
-import * as React from 'react';
-import Modal from '@mui/joy/Modal';
-import ModalClose from '@mui/joy/ModalClose';
-import Typography from '@mui/joy/Typography';
-import Sheet from '@mui/joy/Sheet';
-import useTvCustomHook from '../hooks/useTvCustomHook';
-import Container from './categorymodalInner/editable/Container';
-import ContainerStatic from './categorymodalInner/noteditable/ContainerStatic';
+import * as React from "react";
+import Modal from "@mui/joy/Modal";
+import ModalClose from "@mui/joy/ModalClose";
+import Sheet from "@mui/joy/Sheet";
+import Container from "./categorymodalInner/editable/Container";
+import ContainerStatic from "./categorymodalInner/noteditable/ContainerStatic";
+import { useTvCustomHook } from "../hooks/useTvCustomHook";
 
-export default function ChannelCategory({isCateOn,setIsCateOn}) {
- const {isCateEditable,setIsCateEditable} = useTvCustomHook()
+export default function ChannelCategory() {
+  const { isCateEditable, isCateOn, setIsCateOn } = useTvCustomHook();
   return (
     <React.Fragment>
       <Modal
@@ -16,7 +15,7 @@ export default function ChannelCategory({isCateOn,setIsCateOn}) {
         aria-describedby="modal-desc"
         open={isCateOn}
         onClose={() => setIsCateOn(false)}
-        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
       >
         <Sheet
           variant="outlined"
@@ -27,10 +26,9 @@ export default function ChannelCategory({isCateOn,setIsCateOn}) {
             p: 3,
             boxShadow: "lg",
           }}
-          
         >
           <ModalClose variant="plain" sx={{ m: 1 }} />
-           {isCateEditable?<Container setIsCateEditable={setIsCateEditable}/>:<ContainerStatic setIsCateEditable={setIsCateEditable}/>}
+          {isCateEditable ? <Container /> : <ContainerStatic />}
         </Sheet>
       </Modal>
     </React.Fragment>

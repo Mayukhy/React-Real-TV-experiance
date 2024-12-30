@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import useTvCustomHook from "../../../hooks/useTvCustomHook";
-import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
+import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
 import { IconButton, Tooltip, Typography } from "@mui/joy";
+import { useTvCustomHook } from "../../../hooks/useTvCustomHook";
 
-export default function Container({ setIsCateEditable }) {
-  const { currentCategories, setCurrentCategories, moreCategories, setMoreCategories, currentCategoryvalue } = useTvCustomHook();
+export default function Container() {
+  const {
+    setIsCateEditable,
+    currentCategories,
+    setCurrentCategories,
+    moreCategories,
+    setMoreCategories,
+    currentCategoryvalue,
+  } = useTvCustomHook();
   const [message, setMessage] = useState(""); // To display feedback messages
 
   const handleChangeCategories = () => {
@@ -91,7 +98,7 @@ export default function Container({ setIsCateEditable }) {
           id="modal-title"
           level="h4"
           textColor="inherit"
-          sx={{ fontWeight: 'lg', mb: 1, mt: -1 }}
+          sx={{ fontWeight: "lg", mb: 1, mt: -1 }}
         >
           Edit Categories
         </Typography>
@@ -131,7 +138,8 @@ export default function Container({ setIsCateEditable }) {
                       }`}
                       ref={provided.innerRef}
                       {...provided.draggableProps}
-                      {...(item !== currentCategoryvalue && provided.dragHandleProps)} // Disable drag handle for `currentCategoryvalue`
+                      {...(item !== currentCategoryvalue &&
+                        provided.dragHandleProps)} // Disable drag handle for `currentCategoryvalue`
                     >
                       {item}
                     </div>
