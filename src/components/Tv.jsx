@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Remote from "./Remote";
+import QRCodeModal from "./QRCodeModal";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTvCustomHook } from "../hooks/useTvCustomHook";
+import tvWebSocketService from "../services/tvWebSocketService";
 
 export default function Tv() {
   const params = useParams();
   const [chNoactiveClass, setChNoactiveClass] = useState("flex");
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [tvId, setTvId] = useState('');
   const navigate = useNavigate();
   const {
     isOn,
@@ -39,6 +43,41 @@ export default function Tv() {
   useEffect(() => {
     sessionStorage.setItem("allchannels", JSON.stringify(allTvChannels));
   }, []);
+
+  // Generate or retrieve TV ID
+  useEffect(() => {
+    let storedTvId = sessionStorage.getItem('tvId');
+    if (!storedTvId) {
+      // Generate a unique TV ID
+      const timestamp = Date.now().toString(36);
+      const randomStr = Math.random().toString(36).substr(2, 5);
+      storedTvId = `TV-${timestamp}-${randomStr}`.toUpperCase();
+      sessionStorage.setItem('tvId', storedTvId);
+    }
+    setTvId(storedTvId);
+
+    // Listen for remote validation events
+    const handleRemoteValidated = (event) => {
+      console.log('Remote validated, closing QR modal:', event.detail);
+      setShowQRModal(false);
+    };
+
+    document.addEventListener('remoteValidated', handleRemoteValidated);
+
+    // Cleanup on unmount
+    return () => {
+      document.removeEventListener('remoteValidated', handleRemoteValidated);
+    };
+  }, []);
+
+  // Handle QR code modal
+  const handleShowQRCode = () => {
+    setShowQRModal(true);
+  };
+
+  const handleCloseQRModal = () => {
+    setShowQRModal(false);
+  };
 
   //channel changing function using channel up down buttons
   const channelChangeHandeler = (direction) => {
@@ -131,9 +170,28 @@ export default function Tv() {
     }, 3000);
   }, [params?.id]);
 
+  useEffect(() => {
+    tvWebSocketService.updateTvState({ 
+      currentChannel: currentChannel.channelNo,
+      currentChannelId: currentChannelId 
+    });
+    navigate(`/channel/${currentChannel?.channelNo}`);
+  },[sessionStorage.getItem("currentchannel"), params?.id]);
+
   return (
     <div>
       <div className="tv">
+        {/* QR Code Button - positioned at top right of screen */}
+        <button
+          onClick={handleShowQRCode}
+          className="absolute top-2 right-2 z-20 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg shadow-lg transition-colors"
+          title="Show QR Code for Remote Access"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+          </svg>
+        </button>
+
         <div
           style={{ transform: "translate(-50%,-50%)" }}
           className="television-container rounded-2xl absolute top-[50%] left-[50%]"
@@ -311,6 +369,13 @@ export default function Tv() {
       <Remote
         tvStateHandeler={tvStateHandeler}
         channelChangeHandeler={channelChangeHandeler}
+      />
+      
+      {/* QR Code Modal */}
+      <QRCodeModal 
+        isOpen={showQRModal} 
+        onClose={handleCloseQRModal} 
+        tvId={tvId} 
       />
     </div>
   );

@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "node server/tvWebSocketServer.js",
+    "dev:all": "concurrently \"npm run server\" \"npm run dev\"",
+    "remote": "cd remote-app && npm run dev"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -16,9 +19,14 @@
     "@mui/icons-material": "^6.3.0",
     "@mui/joy": "^5.0.0-beta.51",
     "@mui/material": "^6.3.0",
+    "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^7.1.1"
+    "react-qr-code": "^2.0.18",
+    "react-router-dom": "^7.1.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
@@ -26,6 +34,7 @@
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^9.2.1",
     "eslint": "^9.17.0",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.0.0",

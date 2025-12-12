@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext, createContext } from "react";
+import tvWebSocketService from "../services/tvWebSocketService.js";
 
 // Create Context
 const TvContext = createContext();
@@ -329,10 +330,145 @@ export const TvProvider = ({ children }) => {
   const [numInput, setNumInput] = useState(null);
   const [isCateOn, setIsCateOn] = useState(false);
   const [isCateEditable, setIsCateEditable] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   const numbtns = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+  
+  // Filter channels based on the current category value
+  const filteredChannels =
+    currentCategoryvalue === "All"
+      ? tvChannels
+      : tvChannels.filter(
+          (channel) => channel?.category === currentCategoryvalue
+        );
+
   useEffect(() => {
-    // Your custom logic here
+    // Initialize WebSocket connection
+    const initializeWebSocket = async () => {
+      try {
+        await tvWebSocketService.connect();
+        setIsConnected(true);
+        
+        // Set up command handlers
+        tvWebSocketService.onCommand('POWER_TOGGLE', () => {
+          setIsOn(prev => {
+            const newState = !prev;
+            tvWebSocketService.updateTvState({ isOn: newState });
+            return newState;
+          });
+        });
+        
+        tvWebSocketService.onCommand('CHANNEL_SET', (payload) => {
+          if (payload && payload.channelNo) {
+            
+            const channelNo = Number(payload.channelNo);
+            const channel = filteredChannels.find(ch => ch.channelNo === channelNo);
+            if (channel) {
+              setCurrentChannel(channel);
+              setCurrentChannelId(channel.id);
+              sessionStorage.setItem(
+                "currentchannel",
+                JSON.stringify(channel)
+              );
+            }
+          }
+        });
+        
+        tvWebSocketService.onCommand('CHANNEL_UP', (payload) => {
+          if (filteredChannels.length === 0) {
+            console.error("No channels found for the selected category");
+            return; // Exit if no channels match the filter
+          }
+          // Find the current index in the appropriate array
+          const currentIndex = (payload && payload.channelNo)
+            ? filteredChannels.findIndex(
+                (ch) => ch.channelNo === payload.channelNo
+              )
+            : 0;
+          if (currentIndex === -1) {
+            console.error("Current channel not found in the filtered list");
+            return; // Exit if the current channel is not found
+          }
+          const nextIndex = (currentIndex + 1) % filteredChannels.length; // Loop to the first channel if at the last one
+          const nextChannel = filteredChannels[nextIndex];
+          console.log("next idx is", nextIndex, nextChannel);
+          
+          setCurrentChannelId(nextChannel?.id);
+          setCurrentChannel(nextChannel);
+          sessionStorage.setItem(
+            "currentchannel",
+            JSON.stringify(nextChannel)
+          );
+
+        });
+        
+        tvWebSocketService.onCommand('CHANNEL_DOWN', (payload) => {
+          // This will be handled by the channel change function
+          if (filteredChannels.length === 0) {
+            console.error("No channels found for the selected category");
+            return; // Exit if no channels match the filter
+          }
+          // Find the current index in the appropriate array
+          const currentIndex = filteredChannels.findIndex(
+            (ch) => ch.channelNo === payload.channelNo
+          );
+          if (currentIndex === -1) {
+            console.error("Current channel not found in the filtered list");
+            return; // Exit if the current channel is not found
+          }
+          const prevIndex =
+            (currentIndex - 1 + filteredChannels.length) %
+            filteredChannels.length; // Loop to the last channel if at the first one
+          const prevChannel = filteredChannels[prevIndex];
+          setCurrentChannel(prevChannel);
+          setCurrentChannelId(prevChannel.id);
+          sessionStorage.setItem(
+            "currentchannel",
+            JSON.stringify(prevChannel)
+          );
+        });
+
+        // Listen for remote validation events
+        tvWebSocketService.onCommand('REMOTE_VALIDATED', (data) => {
+          console.log('Remote device validated connection:', data);
+          // Trigger event to close QR modal
+          const event = new CustomEvent('remoteValidated', { detail: data });
+          document.dispatchEvent(event);
+        });
+        
+        tvWebSocketService.onCommand('CATEGORY_CHANGE', (payload) => {
+          if (payload && payload.category) {
+            setCurrentCategoryValue(payload.category);
+            tvWebSocketService.updateTvState({ currentCategory: payload.category });
+          }
+        });
+
+        
+      } catch (error) {
+        console.error('Failed to initialize WebSocket:', error);
+        setIsConnected(false);
+      }
+    };
+    
+    initializeWebSocket();
+    
+    // Cleanup on unmount
+    return () => {
+      tvWebSocketService.disconnect();
+    };
   }, []);
+  
+  // Send TV state updates when relevant state changes
+  useEffect(() => {
+    if (isConnected) {
+      tvWebSocketService.updateTvState({
+        isOn,
+        currentChannel: currentChannel?.channelNo,
+        currentChannelId,
+        currentCategory: currentCategoryvalue
+      });
+    }
+  }, [isOn, currentChannel, currentChannelId, currentCategoryvalue, isConnected]);
+  
 
   return (
     <TvContext.Provider
@@ -360,6 +496,7 @@ export const TvProvider = ({ children }) => {
         setIsCateEditable,
         currentCategoryvalue,
         setCurrentCategoryValue,
+        isConnected,
       }}
     >
       {children}
