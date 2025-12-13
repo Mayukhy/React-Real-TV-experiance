@@ -13,7 +13,7 @@ const QRCodeModal = ({ isOpen, onClose, tvId }) => {
       
       // Check if we're in development and use the remote app port
       const remotePort = hostname === '192.168.1.3' ? ':3002' : port;
-      const url = `${protocol}//${hostname}${remotePort}/remote?tvId=${tvId}`;
+      const url = import.meta.env.NODE_ENV === "production" ? `${import.meta.env.VITE_REMOTE_APP_URL}/remote?tvId=${tvId}` : `${protocol}//${hostname}${remotePort}/remote?tvId=${tvId}`;
       setRemoteUrl(url);
     }
   }, [isOpen, tvId]);
