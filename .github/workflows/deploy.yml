@@ -1,0 +1,127 @@
+name: Deploy TV App to Railway and Vercel
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  # Test all components
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies (main app)
+        run: npm ci
+
+      - name: Install dependencies (remote app)
+        run: cd remote-app && npm ci
+
+      - name: Lint main app
+        run: npm run lint
+
+      - name: Build main app
+        run: npm run build
+
+      - name: Build remote app
+        run: cd remote-app && npm run build
+
+  # Deploy WebSocket Server to Railway
+  deploy-backend:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Railway
+        uses: railway-app/railway@v1
+        with:
+          railway-token: ${{ secrets.RAILWAY_TOKEN }}
+        env:
+          RAILWAY_DOCKERFILE: railway.dockerfile
+
+  # Deploy TV App to Vercel
+  deploy-tv-frontend:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build TV App
+        run: npm run build
+        env:
+          VITE_WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
+
+      - name: Deploy TV App to Vercel
+        uses: vercel/action@v1
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_TV_PROJECT_ID }}
+          working-directory: ./
+
+  # Deploy Remote App to Vercel
+  deploy-remote-frontend:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies (remote app)
+        run: cd remote-app && npm ci
+
+      - name: Build Remote App
+        run: cd remote-app && npm run build
+        env:
+          VITE_WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
+
+      - name: Deploy Remote App to Vercel
+        uses: vercel/action@v1
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_REMOTE_PROJECT_ID }}
+          working-directory: ./remote-app
+
+  # Notify deployment status
+  notify:
+    needs: [deploy-backend, deploy-tv-frontend, deploy-remote-frontend]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Notify deployment complete
+        run: |
+          echo "🎉 Deployment Summary:"
+          echo "✅ Backend (Railway): ${{ needs.deploy-backend.result }}"
+          echo "✅ TV App (Vercel): ${{ needs.deploy-tv-frontend.result }}"
+          echo "✅ Remote App (Vercel): ${{ needs.deploy-remote-frontend.result }}"

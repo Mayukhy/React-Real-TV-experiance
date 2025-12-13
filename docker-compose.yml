@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  websocket-server:
+    build: .
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=production
+      - PORT=3004
+    
+  tv-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.tv
+    ports:
+      - "5173:5173"
+    
+  remote-app:
+    build:
+      context: ./remote-app
+      dockerfile: Dockerfile.remote
+    ports:
+      - "3002:3002"

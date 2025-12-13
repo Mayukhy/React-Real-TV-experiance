@@ -1,0 +1,31 @@
+{
+  "name": "tv-app",
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["dist/**"]
+      }
+    }
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm ci",
+  "devCommand": "npm run dev",
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "VITE_WEBSOCKET_URL": "@websocket_url"
+  },
+  "functions": {
+    "app": {
+      "includeFiles": "dist/**"
+    }
+  }
+}
