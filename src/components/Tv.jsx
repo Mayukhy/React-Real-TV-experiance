@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import Remote from "./Remote";
 import QRCodeModal from "./QRCodeModal";
 import { useNavigate, useParams } from "react-router-dom";

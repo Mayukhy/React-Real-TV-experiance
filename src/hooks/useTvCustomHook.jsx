@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext, createContext, useCallback, useMemo } from "react";
+import PropTypes from 'prop-types';
 import tvWebSocketService from "../services/tvWebSocketService.js";
 
 // Create Context
@@ -410,6 +411,10 @@ export const TvProvider = ({ children }) => {
       {children}
     </TvContext.Provider>
   );
+};
+
+TvProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 // Custom Hook

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import QRCode from 'react-qr-code';
 
 const QRCodeModal = ({ isOpen, onClose, tvId }) => {
@@ -56,6 +57,12 @@ const QRCodeModal = ({ isOpen, onClose, tvId }) => {
       </div>
     </div>
   );
+};
+
+QRCodeModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  tvId: PropTypes.string.isRequired,
 };
 
 export default QRCodeModal;

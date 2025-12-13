@@ -1,6 +1,7 @@
-import { Button, Tooltip } from "@mui/joy";
-import React, { useState, useCallback } from "react";
+import { Tooltip } from "@mui/joy";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import PropTypes from 'prop-types';
 import ChannelCategory from "./ChannelCategory";
 import CategoryIcon from "@mui/icons-material/Category";
 import { useTvCustomHook } from "../hooks/useTvCustomHook";
@@ -226,3 +227,8 @@ export default function Remote({ channelChangeHandeler, tvStateHandeler }) {
     </div>
   );
 }
+
+Remote.propTypes = {
+  channelChangeHandeler: PropTypes.func.isRequired,
+  tvStateHandeler: PropTypes.func.isRequired,
+};

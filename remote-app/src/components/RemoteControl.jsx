@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import { 
-  Button, 
-  Alert, 
+  Button,  
   Box, 
   Typography,
-  Stack
 } from "@mui/joy";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -32,7 +30,6 @@ export default function RemoteControl() {
   const [inputTimer, setInputTimer] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
 
-  const numButtons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
   const categories = ["All", "Entertainment", "Nature", "Animal", "Horror", "Romance"];
   
   useEffect(() => {
