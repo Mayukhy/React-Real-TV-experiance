@@ -57,7 +57,7 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -74,7 +74,7 @@ jobs:
           VITE_WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
 
       - name: Deploy TV App to Vercel
-        uses: amondnet/vercel-action@v25
+        uses: amondnet/vercel-action@master
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
@@ -92,7 +92,7 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -109,7 +109,7 @@ jobs:
           VITE_WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
 
       - name: Deploy Remote App to Vercel
-        uses: amondnet/vercel-action@v25
+        uses: amondnet/vercel-action@master
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
