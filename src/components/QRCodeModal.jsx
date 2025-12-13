@@ -7,9 +7,9 @@ const QRCodeModal = ({ isOpen, onClose, tvId }) => {
   useEffect(() => {
     if (isOpen) {
       // Generate the remote URL with TV ID
-      const hostname = '192.168.1.3';
-      const port = window.location.port ? `:${window.location.port}` : '';
-      const protocol = window.location.protocol;
+      // const hostname = '192.168.1.3';
+      // const port = window.location.port ? `:${window.location.port}` : '';
+      // const protocol = window.location.protocol;
       
       // Check if we're in development and use the remote app port
       // const remotePort = hostname === '192.168.1.3' ? ':3002' : port;
