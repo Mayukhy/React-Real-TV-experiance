@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import Remote from "./Remote";
 import QRCodeModal from "./QRCodeModal";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTvCustomHook } from "../hooks/useTvCustomHook";
-import tvWebSocketService from "../services/tvWebSocketService";
 
 export default function Tv() {
   const params = useParams();
@@ -24,26 +23,18 @@ export default function Tv() {
     allTvChannels,
   } = useTvCustomHook();
 
-  // handle the tv's on off state
-  const tvStateHandeler = () => {
-    setIsOn(!isOn);
-    if (isOn) {
-      document.body.style.backgroundImage = "radial-gradient(#1c1616, #0e0000)";
-    } else
-      document.body.style.backgroundImage = "radial-gradient(#da7878, #5b0f0f)";
-  };
   useEffect(() => {
     sessionStorage.setItem("powerState", JSON.stringify(isOn));
     if (!isOn) {
       document.body.style.backgroundImage = "radial-gradient(#1c1616, #0e0000)";
     } else
       document.body.style.backgroundImage = "radial-gradient(#da7878, #5b0f0f)";
-  }, [isOn]);
-
+    }, [isOn]);
+    
   useEffect(() => {
     sessionStorage.setItem("allchannels", JSON.stringify(allTvChannels));
   }, []);
-
+  
   // Generate or retrieve TV ID
   useEffect(() => {
     let storedTvId = sessionStorage.getItem('tvId');
@@ -55,92 +46,32 @@ export default function Tv() {
       sessionStorage.setItem('tvId', storedTvId);
     }
     setTvId(storedTvId);
-
+    
     // Listen for remote validation events
     const handleRemoteValidated = (event) => {
       console.log('Remote validated, closing QR modal:', event.detail);
       setShowQRModal(false);
     };
-
-    document.addEventListener('remoteValidated', handleRemoteValidated);
-
+    
+    window.addEventListener('remoteValidated', handleRemoteValidated);
+    
     // Cleanup on unmount
     return () => {
-      document.removeEventListener('remoteValidated', handleRemoteValidated);
+      window.removeEventListener('remoteValidated', handleRemoteValidated);
     };
   }, []);
-
-  // Handle QR code modal
-  const handleShowQRCode = () => {
-    setShowQRModal(true);
-  };
-
-  const handleCloseQRModal = () => {
-    setShowQRModal(false);
-  };
-
-  //channel changing function using channel up down buttons
-  const channelChangeHandeler = (direction) => {
-    if (!tvChannels || tvChannels.length === 0) return; // If no channels, do nothing
-
-    // Filter channels based on the current category value
-    const filteredChannels =
-      currentCategoryvalue === "All"
-        ? tvChannels
-        : tvChannels.filter(
-            (channel) => channel?.category === currentCategoryvalue
-          );
-
-    if (filteredChannels.length === 0) {
-      console.error("No channels found for the selected category");
-      return; // Exit if no channels match the filter
-    }
-
-    // Find the current index in the appropriate array
-    const currentIndex = filteredChannels.findIndex(
-      (channel) => channel.id === currentChannelId
-    );
-
-    if (currentIndex === -1) {
-      console.error("Current channel not found in the filtered list");
-      return; // Exit if the current channel is not found
-    }
-
-    if (direction === "next") {
-      console.log("next");
-      const nextIndex = (currentIndex + 1) % filteredChannels.length; // Loop to the first channel if at the last one
-      const nextChannel = filteredChannels[nextIndex];
-
-      setCurrentChannelId(nextChannel?.id);
-      setCurrentChannel(nextChannel);
-      sessionStorage.setItem("currentchannel", JSON.stringify(nextChannel));
-      navigate(`/channel/${nextChannel?.channelNo}`); // Use the channel number for navigation
-      console.log("Next channel is", nextChannel);
-    } else if (direction === "prev") {
-      const prevIndex =
-        (currentIndex - 1 + filteredChannels.length) % filteredChannels.length; // Loop to the last channel if at the first one
-      const prevChannel = filteredChannels[prevIndex];
-
-      setCurrentChannelId(prevChannel?.id);
-      setCurrentChannel(prevChannel);
-      sessionStorage.setItem("currentchannel", JSON.stringify(prevChannel));
-      navigate(`/channel/${prevChannel?.channelNo}`); // Use the channel number for navigation
-      console.log("Previous channel is", prevChannel);
-    }
-  };
-
+  
   useEffect(() => {
     if (!params?.id || !tvChannels || tvChannels.length === 0) return;
 
     const channelNo = Number(params.id);
-    console.log("channel no is", channelNo);
-
+    
     // Validate the `id` parameter and navigate if necessary
     if (channelNo === 0) {
       navigate(`/channel/1`);
       return;
     }
-
+    
     if (channelNo > tvChannels.length && currentCategoryvalue === "All") {
       navigate(`/channel/${tvChannels.length}`);
       return;
@@ -159,24 +90,95 @@ export default function Tv() {
         JSON.stringify(tvChannels[currentIndex])
       );
     } else {
-      console.error("Channel not found");
+      return
     }
-  }, [params?.id, tvChannels]);
-
+  }, [params?.id]);
+  
   useEffect(() => {
     setChNoactiveClass("flex");
     setTimeout(() => {
       setChNoactiveClass("hidden");
     }, 3000);
+    return () => {
+      setChNoactiveClass("flex");
+      clearTimeout(3000);
+    };
   }, [params?.id]);
+  
+  useEffect(() => {
+    navigate(`/channel/${currentChannel?.channelNo}`);
+  },[sessionStorage.getItem("currentchannel")]);
 
   useEffect(() => {
-    tvWebSocketService.updateTvState({ 
-      currentChannel: currentChannel.channelNo,
-      currentChannelId: currentChannelId 
-    });
-    navigate(`/channel/${currentChannel?.channelNo}`);
-  },[sessionStorage.getItem("currentchannel"), params?.id]);
+    setTimeout(() => {
+      navigate(`/channel/${tvChannels[0]?.channelNo}`);
+    }, 1000);
+  },[currentCategoryvalue, tvChannels])
+
+  // Memoize filtered channels for current category
+  const filteredChannels = useMemo(() => {
+    return currentCategoryvalue === "All"
+      ? tvChannels
+      : tvChannels.filter(channel => channel?.category === currentCategoryvalue);
+  }, [tvChannels, currentCategoryvalue]);
+
+  // handle the tv's on off state
+  const tvStateHandeler = useCallback(() => {
+    setIsOn(!isOn);
+    if (isOn) {
+      document.body.style.backgroundImage = "radial-gradient(#1c1616, #0e0000)";
+    } else
+      document.body.style.backgroundImage = "radial-gradient(#da7878, #5b0f0f)";
+  }, [isOn]);
+
+  // Handle QR code modal
+  const handleShowQRCode = useCallback(() => {
+    setShowQRModal(true);
+  }, []);
+
+  const handleCloseQRModal = useCallback(() => {
+    setShowQRModal(false);
+  }, []);
+
+  //channel changing function using channel up down buttons
+  const channelChangeHandeler = useCallback((direction) => {
+    if (!filteredChannels || filteredChannels.length === 0) return; // If no channels, do nothing
+
+    if (filteredChannels.length === 0) {
+      console.error("No channels found for the selected category");
+      return; // Exit if no channels match the filter
+    }
+
+    // Find the current index in the appropriate array
+    const currentIndex = filteredChannels.findIndex(
+      (channel) => channel.id === currentChannelId
+    );
+
+    if (currentIndex === -1) {
+      console.error("Current channel not found in the filtered list");
+      return; // Exit if the current channel is not found
+    }
+
+    if (direction === "next") {
+      const nextIndex = (currentIndex + 1) % filteredChannels.length; // Loop to the first channel if at the last one
+      const nextChannel = filteredChannels[nextIndex];
+
+      setCurrentChannelId(nextChannel?.id);
+      setCurrentChannel(nextChannel);
+      sessionStorage.setItem("currentchannel", JSON.stringify(nextChannel));
+      navigate(`/channel/${nextChannel?.channelNo}`); // Use the channel number for navigation
+
+    } else if (direction === "prev") {
+      const prevIndex =
+        (currentIndex - 1 + filteredChannels.length) % filteredChannels.length; // Loop to the last channel if at the first one
+      const prevChannel = filteredChannels[prevIndex];
+
+      setCurrentChannelId(prevChannel?.id);
+      setCurrentChannel(prevChannel);
+      sessionStorage.setItem("currentchannel", JSON.stringify(prevChannel));
+      navigate(`/channel/${prevChannel?.channelNo}`); // Use the channel number for navigation
+    }
+  }, [filteredChannels, currentChannelId, setCurrentChannelId, setCurrentChannel]);
 
   return (
     <div>

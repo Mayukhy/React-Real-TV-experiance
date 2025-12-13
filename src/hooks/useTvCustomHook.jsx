@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, createContext } from "react";
+import { useState, useEffect, useContext, createContext, useCallback, useMemo } from "react";
 import tvWebSocketService from "../services/tvWebSocketService.js";
 
 // Create Context
@@ -13,6 +13,7 @@ export const TvProvider = ({ children }) => {
   const myCategories = JSON.parse(sessionStorage.getItem("mycategories"));
   const more_Categories = JSON.parse(sessionStorage.getItem("morecategories"));
   const categoryValue = JSON.parse(sessionStorage.getItem("categoryValue"));
+
   const [allTvChannels, setAllTvChannels] = useState([
     {
       id: "id_1",
@@ -156,148 +157,7 @@ export const TvProvider = ({ children }) => {
     },
   ]);
 
-  const [tvChannels, setTvChannels] = useState([
-    {
-      id: "id_1",
-      channelNo: 1,
-      isplayimg: false,
-      category: "Entertainment",
-      videoUrl: "https://dummyurl.com/video1",
-    },
-    {
-      id: "id_2",
-      channelNo: 2,
-      isplayimg: false,
-      category: "Nature",
-      videoUrl: "https://dummyurl.com/video2",
-    },
-    {
-      id: "id_3",
-      channelNo: 3,
-      isplayimg: false,
-      category: "Nature",
-      videoUrl: "https://dummyurl.com/video3",
-    },
-    {
-      id: "id_4",
-      channelNo: 4,
-      isplayimg: false,
-      category: "Animal",
-      videoUrl: "https://dummyurl.com/video4",
-    },
-    {
-      id: "id_5",
-      channelNo: 5,
-      isplayimg: false,
-      category: "Animal",
-      videoUrl: "https://dummyurl.com/video5",
-    },
-    {
-      id: "id_6",
-      channelNo: 6,
-      isplayimg: false,
-      category: "Horror",
-      videoUrl: "https://dummyurl.com/video6",
-    },
-    {
-      id: "id_7",
-      channelNo: 7,
-      isplayimg: false,
-      category: "Horror",
-      videoUrl: "https://dummyurl.com/video7",
-    },
-    {
-      id: "id_8",
-      channelNo: 8,
-      isplayimg: false,
-      category: "Horror",
-      videoUrl: "https://dummyurl.com/video8",
-    },
-    {
-      id: "id_9",
-      channelNo: 9,
-      isplayimg: false,
-      category: "Horror",
-      videoUrl: "https://dummyurl.com/video9",
-    },
-    {
-      id: "id_10",
-      channelNo: 10,
-      isplayimg: false,
-      category: "Horror",
-      videoUrl: "https://dummyurl.com/video10",
-    },
-    {
-      id: "id_11",
-      channelNo: 11,
-      isplayimg: false,
-      category: "Romance",
-      videoUrl: "https://dummyurl.com/video11",
-    },
-    {
-      id: "id_12",
-      channelNo: 12,
-      isplayimg: false,
-      category: "Romance",
-      videoUrl: "https://dummyurl.com/video12",
-    },
-    {
-      id: "id_13",
-      channelNo: 13,
-      isplayimg: false,
-      category: "Animal",
-      videoUrl: "https://dummyurl.com/video13",
-    },
-    {
-      id: "id_14",
-      channelNo: 14,
-      isplayimg: false,
-      category: "Nature",
-      videoUrl: "https://dummyurl.com/video14",
-    },
-    {
-      id: "id_15",
-      channelNo: 15,
-      isplayimg: false,
-      category: "Romance",
-      videoUrl: "https://dummyurl.com/video15",
-    },
-    {
-      id: "id_16",
-      channelNo: 16,
-      isplayimg: false,
-      category: "Animal",
-      videoUrl: "https://dummyurl.com/video16",
-    },
-    {
-      id: "id_17",
-      channelNo: 17,
-      isplayimg: false,
-      category: "Nature",
-      videoUrl: "https://dummyurl.com/video17",
-    },
-    {
-      id: "id_18",
-      channelNo: 18,
-      isplayimg: false,
-      category: "Romance",
-      videoUrl: "https://dummyurl.com/video18",
-    },
-    {
-      id: "id_19",
-      channelNo: 19,
-      isplayimg: false,
-      category: "Romance",
-      videoUrl: "https://dummyurl.com/video19",
-    },
-    {
-      id: "id_20",
-      channelNo: 20,
-      isplayimg: false,
-      category: "Romance",
-      videoUrl: "https://dummyurl.com/video20",
-    },
-  ]);
+  const [tvChannels, setTvChannels] = useState(allTvChannels);
   const [currentCategories, setCurrentCategories] = useState(
     myCategories
       ? myCategories
@@ -333,13 +193,9 @@ export const TvProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
   const numbtns = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
   
-  // Filter channels based on the current category value
-  const filteredChannels =
-    currentCategoryvalue === "All"
-      ? tvChannels
-      : tvChannels.filter(
-          (channel) => channel?.category === currentCategoryvalue
-        );
+  useEffect(() =>{
+   updateCategoryChannelList(categoryValue);
+  },[currentCategoryvalue])
 
   useEffect(() => {
     // Initialize WebSocket connection
@@ -361,7 +217,7 @@ export const TvProvider = ({ children }) => {
           if (payload && payload.channelNo) {
             
             const channelNo = Number(payload.channelNo);
-            const channel = filteredChannels.find(ch => ch.channelNo === channelNo);
+            const channel = tvChannels.find(ch => ch.channelNo === channelNo);
             if (channel) {
               setCurrentChannel(channel);
               setCurrentChannelId(channel.id);
@@ -374,45 +230,51 @@ export const TvProvider = ({ children }) => {
         });
         
         tvWebSocketService.onCommand('CHANNEL_UP', (payload) => {
+          console.log("payload in channel up", payload);
+          // Filter channels based on the current category value
+          const filteredChannels = getFilteredChannels(payload.channel.currentCategory);
           if (filteredChannels.length === 0) {
-            console.error("No channels found for the selected category");
             return; // Exit if no channels match the filter
           }
+          console.log("filtered channels", filteredChannels);
+          
           // Find the current index in the appropriate array
-          const currentIndex = (payload && payload.channelNo)
-            ? filteredChannels.findIndex(
-                (ch) => ch.channelNo === payload.channelNo
+          const currentIndex = filteredChannels.findIndex(
+                (ch) => ch.id === payload.channel.currentChannelId
               )
-            : 0;
+          
           if (currentIndex === -1) {
-            console.error("Current channel not found in the filtered list");
             return; // Exit if the current channel is not found
           }
           const nextIndex = (currentIndex + 1) % filteredChannels.length; // Loop to the first channel if at the last one
           const nextChannel = filteredChannels[nextIndex];
-          console.log("next idx is", nextIndex, nextChannel);
           
-          setCurrentChannelId(nextChannel?.id);
+          setCurrentChannelId(nextChannel.id);
           setCurrentChannel(nextChannel);
           sessionStorage.setItem(
             "currentchannel",
             JSON.stringify(nextChannel)
           );
-
+          tvWebSocketService.updateTvState({ 
+            currentChannel: nextChannel.channelNo,
+            currentChannelId: nextChannel.id 
+          });
         });
         
         tvWebSocketService.onCommand('CHANNEL_DOWN', (payload) => {
+          // Filter channels based on the current category value
+          const filteredChannels = getFilteredChannels(payload.channel.currentCategory);
+          
           // This will be handled by the channel change function
           if (filteredChannels.length === 0) {
-            console.error("No channels found for the selected category");
             return; // Exit if no channels match the filter
           }
+
           // Find the current index in the appropriate array
           const currentIndex = filteredChannels.findIndex(
-            (ch) => ch.channelNo === payload.channelNo
+            (ch) => ch.id === payload.channel.currentChannelId
           );
           if (currentIndex === -1) {
-            console.error("Current channel not found in the filtered list");
             return; // Exit if the current channel is not found
           }
           const prevIndex =
@@ -425,6 +287,11 @@ export const TvProvider = ({ children }) => {
             "currentchannel",
             JSON.stringify(prevChannel)
           );
+
+          tvWebSocketService.updateTvState({ 
+            currentChannel: prevChannel.channelNo,
+            currentChannelId: prevChannel.id 
+          });
         });
 
         // Listen for remote validation events
@@ -432,17 +299,21 @@ export const TvProvider = ({ children }) => {
           console.log('Remote device validated connection:', data);
           // Trigger event to close QR modal
           const event = new CustomEvent('remoteValidated', { detail: data });
-          document.dispatchEvent(event);
+          window.dispatchEvent(event);
         });
         
         tvWebSocketService.onCommand('CATEGORY_CHANGE', (payload) => {
           if (payload && payload.category) {
             setCurrentCategoryValue(payload.category);
+            updateCategoryChannelList(payload.category);
+            sessionStorage.setItem(
+              "categoryValue",
+              JSON.stringify(payload.category)
+            );
             tvWebSocketService.updateTvState({ currentCategory: payload.category });
           }
         });
 
-        
       } catch (error) {
         console.error('Failed to initialize WebSocket:', error);
         setIsConnected(false);
@@ -470,35 +341,75 @@ export const TvProvider = ({ children }) => {
   }, [isOn, currentChannel, currentChannelId, currentCategoryvalue, isConnected]);
   
 
+  const getFilteredChannels = useCallback((category) => {
+    const filteredChannels =
+    category === "All"
+      ? allTvChannels
+      : allTvChannels.filter(
+          (channel) => channel?.category === category
+        );
+    return filteredChannels;
+  }, [allTvChannels]);
+
+  const updateCategoryChannelList = useCallback((currentCategoryvalue) => {
+    if (currentCategoryvalue !== "All") {
+      const filteredTvChannels = allTvChannels.filter(
+        (itm) => itm?.category === currentCategoryvalue
+      );
+      
+      if (filteredTvChannels.length > 0) {
+        setTvChannels(filteredTvChannels); // Update the state
+      } else {
+        console.warn(`No channels found for category: ${currentCategoryvalue}`);
+        setTvChannels([]); // Reset to an empty array if no channels match
+      }
+    } else {
+      setTvChannels(allTvChannels); // Show all channels for "All" category
+    }
+  }, [allTvChannels]);
+
+  const contextValue = useMemo(() => ({
+    allTvChannels,
+    setAllTvChannels,
+    tvChannels,
+    setTvChannels,
+    currentChannel,
+    setCurrentChannel,
+    currentCategories,
+    setCurrentCategories,
+    moreCategories,
+    setMoreCategories,
+    currentChannelId,
+    setCurrentChannelId,
+    isOn,
+    setIsOn,
+    numbtns,
+    numInput,
+    setNumInput,
+    isCateOn,
+    setIsCateOn,
+    isCateEditable,
+    setIsCateEditable,
+    currentCategoryvalue,
+    setCurrentCategoryValue,
+    isConnected
+  }), [
+    allTvChannels,
+    tvChannels,
+    currentChannel,
+    currentCategories,
+    moreCategories,
+    currentChannelId,
+    isOn,
+    numInput,
+    isCateOn,
+    isCateEditable,
+    currentCategoryvalue,
+    isConnected
+  ]);
+
   return (
-    <TvContext.Provider
-      value={{
-        allTvChannels,
-        setAllTvChannels,
-        tvChannels,
-        setTvChannels,
-        currentChannel,
-        setCurrentChannel,
-        currentCategories,
-        setCurrentCategories,
-        moreCategories,
-        setMoreCategories,
-        currentChannelId,
-        setCurrentChannelId,
-        isOn,
-        setIsOn,
-        numbtns,
-        numInput,
-        setNumInput,
-        isCateOn,
-        setIsCateOn,
-        isCateEditable,
-        setIsCateEditable,
-        currentCategoryvalue,
-        setCurrentCategoryValue,
-        isConnected,
-      }}
-    >
+    <TvContext.Provider value={contextValue}>
       {children}
     </TvContext.Provider>
   );

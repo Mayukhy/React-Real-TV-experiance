@@ -7,6 +7,7 @@ class RemoteWebSocketService {
     this.tvState = {
       isOn: false,
       currentChannel: 1,
+      currentChannelId: "id_1",
       currentCategory: 'All'
     };
     this.callbacks = new Map();
@@ -95,7 +96,7 @@ class RemoteWebSocketService {
   }
 
   // Send commands to TV
-  sendCommand(type, payload = {}, tvId = null) {
+  sendCommand(type, payload, tvId) {
     if (this.socket && this.isConnected) {
       const command = { type, payload };
       if (tvId) {
@@ -120,11 +121,11 @@ class RemoteWebSocketService {
   }
 
   channelUp(tvId) {
-    return this.sendCommand('CHANNEL_UP', {channelNo: this.tvState.currentChannel}, tvId);
+    return this.sendCommand('CHANNEL_UP', {channel: this.tvState}, tvId);
   }
 
   channelDown(tvId) {
-    return this.sendCommand('CHANNEL_DOWN', {channelNo: this.tvState.currentChannel}, tvId);
+    return this.sendCommand('CHANNEL_DOWN', {channel: this.tvState}, tvId);
   }
 
   setCategory(category, tvId) {

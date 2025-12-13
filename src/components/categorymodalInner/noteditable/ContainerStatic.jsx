@@ -22,7 +22,7 @@ export default function ContainerStatic() {
   const isInitialRender = useRef(true);
   const ChangeCategoryValue = (value) => {
     setCurrentCategoryValue(value);
-    // sessionStorage.setItem("categoryValue",JSON.stringify(value))
+    sessionStorage.setItem("categoryValue",JSON.stringify(value))
   };
 
   useEffect(() => {

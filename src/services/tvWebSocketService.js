@@ -36,8 +36,8 @@ class TvWebSocketService {
 
       // Listen for remote commands
       this.socket.on('tv-command', (command) => {
-        console.log('Received TV command:', command);
         this.handleCommand(command);
+        console.log('Received TV command:', command);
       });
 
       // Listen for remote validation events
