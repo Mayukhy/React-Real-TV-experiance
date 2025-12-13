@@ -79,6 +79,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_TV_PROJECT_ID }}
+          vercel-args: '--prod'
           working-directory: ./
 
   # Deploy Remote App to Vercel
@@ -110,6 +111,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_REMOTE_PROJECT_ID }}
+          vercel-args: '--prod'
           working-directory: ./remote-app
 
   # Notify deployment status
