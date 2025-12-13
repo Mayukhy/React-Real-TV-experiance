@@ -74,13 +74,16 @@ jobs:
           VITE_WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
 
       - name: Deploy TV App to Vercel
-        uses: amondnet/vercel-action@v25
+        uses: vercel/action@v1
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_TV_PROJECT_ID }}
-          vercel-args: '--prod'
           working-directory: ./
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_TV_PROJECT_ID }}
+          VITE_WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
 
   # Deploy Remote App to Vercel
   deploy-remote-frontend:
@@ -106,13 +109,16 @@ jobs:
           VITE_WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
 
       - name: Deploy Remote App to Vercel
-        uses: amondnet/vercel-action@v25
+        uses: vercel/action@v1
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_REMOTE_PROJECT_ID }}
-          vercel-args: '--prod'
           working-directory: ./remote-app
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_REMOTE_PROJECT_ID }}
+          VITE_WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
 
   # Notify deployment status
   notify:
