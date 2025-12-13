@@ -11,7 +11,8 @@ class RemoteWebSocketService {
       currentCategory: 'All'
     };
     this.callbacks = new Map();
-    this.serverUrl = 'http://localhost:3004';
+    // Use environment variable with fallback
+    this.serverUrl = import.meta.env.VITE_WEBSOCKET_URL;
   }
 
   async connect(customUrl) {
@@ -19,8 +20,7 @@ class RemoteWebSocketService {
     
     // Auto-detect server URL if not provided
     if (!url) {
-      const hostname = window.location.hostname;
-      url = `http://${hostname}:3004`;
+      url = this.serverUrl;
     }
     
     try {

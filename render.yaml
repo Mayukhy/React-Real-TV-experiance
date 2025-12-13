@@ -10,7 +10,7 @@ services:
         value: production
     healthCheckPath: /
     autoDeploy: true
-    repo: https://github.com/your-username/tv-app.git
+    repo: https://github.com/Mayukhy/React-Real-TV-experiance.git
     branch: main
     rootDir: ./
     scaling:

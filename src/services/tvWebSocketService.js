@@ -10,8 +10,8 @@ class TvWebSocketService {
   connect(serverUrl) {
     // Auto-detect server URL if not provided
     if (!serverUrl) {
-      const hostname = window.location.hostname;
-      serverUrl = `http://${hostname}:3004`;
+      // Use environment variable with fallback
+      serverUrl = import.meta.env.VITE_WEBSOCKET_URL;
     }
     
     try {
