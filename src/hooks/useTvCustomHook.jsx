@@ -161,20 +161,18 @@ export const TvProvider = ({ children }) => {
   const [currentCategories, setCurrentCategories] = useState(
     myCategories
       ? myCategories
-      : ["Animal", "Entertainment", "Horror", "Happy New Year"]
+      : ["Animal", "Entertainment", "Horror", "Nature", "Romance"]
   );
   const [moreCategories, setMoreCategories] = useState(
     more_Categories
       ? more_Categories
       : [
           "Merry Christmas",
-          "Romance",
           "Animae",
-          "Nature",
           "Science",
           "Kids",
           "Music",
-          "News",
+          "News"
         ]
   );
   const [currentCategoryvalue, setCurrentCategoryValue] = useState(
@@ -340,7 +338,6 @@ export const TvProvider = ({ children }) => {
     }
   }, [isOn, currentChannel, currentChannelId, currentCategoryvalue, isConnected]);
   
-
   const getFilteredChannels = useCallback((category) => {
     const filteredChannels =
     category === "All"

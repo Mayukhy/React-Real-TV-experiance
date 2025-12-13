@@ -110,10 +110,13 @@ export default function Tv() {
   },[sessionStorage.getItem("currentchannel")]);
 
   useEffect(() => {
-    setTimeout(() => {
-      navigate(`/channel/${tvChannels[0]?.channelNo}`);
-    }, 1000);
-  },[currentCategoryvalue, tvChannels])
+    if( currentCategoryvalue !== "All" ) {
+      setTimeout(() => {
+        navigate(`/channel/${tvChannels[0]?.channelNo}`);
+      }, 1000);
+      return () => clearTimeout();
+    }
+  },[tvChannels])
 
   // Memoize filtered channels for current category
   const filteredChannels = useMemo(() => {
