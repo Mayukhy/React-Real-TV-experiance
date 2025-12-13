@@ -191,7 +191,7 @@ class TvWebSocketServer {
 }
 
 // Start the server
-const port = process.env.PORT || 3004;
+const port = 3004;
 const server = new TvWebSocketServer(port);
 server.start();
 

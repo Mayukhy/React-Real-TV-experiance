@@ -11,7 +11,8 @@ class TvWebSocketService {
     // Auto-detect server URL if not provided
     if (!serverUrl) {
       // Use environment variable with fallback
-      serverUrl = import.meta.env.VITE_WEBSOCKET_URL;
+      serverUrl = import.meta.env.VITE_WEBSOCKET_URL || "https://react-real-tv-experiance.onrender.com";
+      console.log('TV WebSocket URL:', serverUrl);
     }
     
     try {
