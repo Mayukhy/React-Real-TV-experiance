@@ -74,7 +74,7 @@ jobs:
           VITE_WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
 
       - name: Deploy TV App to Vercel
-        uses: vercel/action@v1
+        uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
@@ -105,7 +105,7 @@ jobs:
           VITE_WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
 
       - name: Deploy Remote App to Vercel
-        uses: vercel/action@v1
+        uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
