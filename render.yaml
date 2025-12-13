@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: tv-websocket-server
+    env: node
+    plan: free
+    buildCommand: npm ci --only=production
+    startCommand: npm run server
+    envVars:
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /
+    autoDeploy: true
+    repo: https://github.com/your-username/tv-app.git
+    branch: main
+    rootDir: ./
+    scaling:
+      minInstances: 1
+      maxInstances: 1

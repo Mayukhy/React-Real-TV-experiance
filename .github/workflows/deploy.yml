@@ -1,4 +1,4 @@
-name: Deploy TV App to Railway and Vercel
+name: Deploy TV App to Render and Vercel
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
       - name: Build remote app
         run: cd remote-app && npm run build
 
-  # Deploy WebSocket Server to Railway
+  # Deploy WebSocket Server to Render
   deploy-backend:
     needs: test
     runs-on: ubuntu-latest
@@ -44,12 +44,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to Railway
-        uses: railway-app/railway@v1
+      - name: Deploy to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
         with:
-          railway-token: ${{ secrets.RAILWAY_TOKEN }}
-        env:
-          RAILWAY_DOCKERFILE: railway.dockerfile
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
 
   # Deploy TV App to Vercel
   deploy-tv-frontend:
@@ -122,6 +121,6 @@ jobs:
       - name: Notify deployment complete
         run: |
           echo "🎉 Deployment Summary:"
-          echo "✅ Backend (Railway): ${{ needs.deploy-backend.result }}"
+          echo "✅ Backend (Render): ${{ needs.deploy-backend.result }}"
           echo "✅ TV App (Vercel): ${{ needs.deploy-tv-frontend.result }}"
           echo "✅ Remote App (Vercel): ${{ needs.deploy-remote-frontend.result }}"
