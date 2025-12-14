@@ -8,6 +8,7 @@ export default function Tv() {
   const params = useParams();
   const [chNoactiveClass, setChNoactiveClass] = useState("flex");
   const [showQRModal, setShowQRModal] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
   const [tvId, setTvId] = useState('');
   const navigate = useNavigate();
   const {
@@ -30,7 +31,7 @@ export default function Tv() {
     } else
       document.body.style.backgroundImage = "radial-gradient(#da7878, #5b0f0f)";
     }, [isOn]);
-    
+
   useEffect(() => {
     sessionStorage.setItem("allchannels", JSON.stringify(allTvChannels));
   }, []);
@@ -143,6 +144,15 @@ export default function Tv() {
     setShowQRModal(false);
   }, []);
 
+  // Handle instructions modal
+  const handleShowInstructions = useCallback(() => {
+    setShowInstructions(true);
+  }, []);
+
+  const handleCloseInstructions = useCallback(() => {
+    setShowInstructions(false);
+  }, []);
+
   //channel changing function using channel up down buttons
   const channelChangeHandeler = useCallback((direction) => {
     if (!filteredChannels || filteredChannels.length === 0) return; // If no channels, do nothing
@@ -186,16 +196,103 @@ export default function Tv() {
   return (
     <div>
       <div className="tv">
+        {/* TV ID Display - positioned at top left of screen */}
+        <div className="absolute top-2 left-2 z-20 bg-gray-800 bg-opacity-80 text-white px-3 py-2 rounded-lg shadow-lg">
+          <div className="text-sm font-mono">TV ID: {tvId}</div>
+        </div>
+
+        {/* Instructions Button - positioned at top right left of QR button */}
+        <button
+          onClick={handleShowInstructions}
+          className="absolute top-4 right-[150px] z-20 bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-xl shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-green-400/50"
+          title="How to Connect Remote"
+        >
+          <div className="flex items-center space-x-2">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-sm font-semibold hidden sm:block">Help</span>
+          </div>
+        </button>
+
         {/* QR Code Button - positioned at top right of screen */}
         <button
           onClick={handleShowQRCode}
-          className="absolute top-2 right-2 z-20 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg shadow-lg transition-colors"
+          className="absolute top-4 right-4 z-20 bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-xl shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-blue-400/50 ring-2 ring-blue-300 ring-opacity-50"
           title="Show QR Code for Remote Access"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-          </svg>
+          <div className="flex items-center space-x-2">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+            </svg>
+            <span className="text-sm font-semibold hidden sm:block">QR Code</span>
+          </div>
         </button>
+
+        {/* Instructions Modal */}
+        {showInstructions && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                    <svg className="w-6 h-6 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Connect Your Remote
+                  </h2>
+                  <button
+                    onClick={handleCloseInstructions}
+                    className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-2">
+                  <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <h3 className="font-semibold text-blue-800 mb-2">📱 Method: QR Code</h3>
+                    <ol className="list-decimal list-inside space-y-2 text-sm text-blue-700">
+                      <li>Click the <span className="bg-blue-500 text-white px-2 py-1 rounded text-xs">QR</span> button (top right)</li>
+                      <li>Open camera app on your phone</li>
+                      <li>Scan the QR code displayed</li>
+                      <li>Open the remote control link</li>
+                    </ol>
+                  </div>
+                  
+                  <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                    <h3 className="font-semibold text-yellow-800 mb-2">✨ Features</h3>
+                    <ul className="list-disc list-inside space-y-1 text-sm text-yellow-700">
+                      <li>Control TV power on/off</li>
+                      <li>Change channels up/down</li>
+                      <li>Switch between categories</li>
+                      <li>Real-time synchronization</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                    <h3 className="font-semibold text-red-800 mb-2">⚠️ Troubleshooting</h3>
+                    <ul className="list-disc list-inside space-y-1 text-sm text-red-700">
+                      <li>Ensure same WiFi network</li>
+                      <li>Check TV ID matches exactly</li>
+                      <li>Refresh remote app if needed</li>
+                      <li>Try scanning QR code again</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div className="mt-6 flex justify-center">
+                  <button
+                    onClick={handleCloseInstructions}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+                  >
+                    Got It!
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div
           style={{ transform: "translate(-50%,-50%)" }}

@@ -193,7 +193,7 @@ export const TvProvider = ({ children }) => {
   const numbtns = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
   
   useEffect(() =>{
-   updateCategoryChannelList(categoryValue);
+   updateCategoryChannelList(currentCategoryvalue);
   },[currentCategoryvalue])
 
   useEffect(() => {
@@ -349,7 +349,7 @@ export const TvProvider = ({ children }) => {
     return filteredChannels;
   }, [allTvChannels]);
 
-  const updateCategoryChannelList = useCallback((currentCategoryvalue) => {
+  const updateCategoryChannelList = (currentCategoryvalue) => {
     if (currentCategoryvalue !== "All") {
       const filteredTvChannels = allTvChannels.filter(
         (itm) => itm?.category === currentCategoryvalue
@@ -364,7 +364,7 @@ export const TvProvider = ({ children }) => {
     } else {
       setTvChannels(allTvChannels); // Show all channels for "All" category
     }
-  }, [allTvChannels]);
+  };
 
   const contextValue = useMemo(() => ({
     allTvChannels,
