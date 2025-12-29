@@ -30,7 +30,7 @@ export default function RemoteControl() {
   const [inputTimer, setInputTimer] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
 
-  const categories = ["All", "Entertainment", "Nature", "Animal", "Horror", "Romance"];
+  const categories = ["All", "Entertainment", "Nature", "Animal", "Horror", "Romance", "2025 Wrapped"];
   
   useEffect(() => {
     const urlTvId = searchParams.get('tvId');
@@ -174,6 +174,14 @@ export default function RemoteControl() {
     return !isConnected || isValidTvId !== true || isConnecting;
   };
 
+  // const handleBugReport = (bugReport) => {
+  //   if (tvId) {
+  //     remoteService.sendBugReport(tvId, bugReport);
+  //   } else {
+  //     console.error('Cannot send bug report - missing TV ID');
+  //   }
+  // };
+
   return (
     <Box 
       sx={{ 
@@ -185,6 +193,7 @@ export default function RemoteControl() {
         justifyContent: 'center'
       }}
     >
+      {/* <Button onClick={() => handleBugReport("Sample bug report")}>Report Bug</Button> */}
       <Box 
         sx={{ 
           width: '100%',
@@ -566,35 +575,74 @@ export default function RemoteControl() {
               onClick={() => handleCategoryChange(category)}
               disabled={isControlsDisabled() || !tvState.isOn}
               sx={{ 
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                borderRadius: '12px',
-                py: 1.5,
-                background: tvState.currentCategory === category 
-                  ? 'linear-gradient(135deg, #667eea, #764ba2)'
-                  : 'rgba(255, 255, 255, 0.1)',
+                fontSize: category === '2025 Wrapped' ? '0.9rem' : '0.8rem',
+                fontWeight: category === '2025 Wrapped' ? 700 : 600,
+                borderRadius: category === '2025 Wrapped' ? '16px' : '12px',
+                py: category === '2025 Wrapped' ? 2 : 1.5,
+                gridColumn: category === '2025 Wrapped' ? 'span 2' : 'auto',
+                background: category === '2025 Wrapped'
+                  ? (tvState.currentCategory === category
+                    ? 'linear-gradient(135deg, #FFD700 0%, #FF6B6B 25%, #4ECDC4 50%, #45B7D1 75%, #9B59B6 100%)'
+                    : 'linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 107, 107, 0.3) 25%, rgba(78, 205, 196, 0.3) 50%, rgba(69, 183, 209, 0.3) 75%, rgba(155, 89, 182, 0.3) 100%)')
+                  : (tvState.currentCategory === category 
+                    ? 'linear-gradient(135deg, #667eea, #764ba2)'
+                    : 'rgba(255, 255, 255, 0.1)'),
                 backdropFilter: 'blur(10px)',
-                border: tvState.currentCategory === category 
-                  ? '1px solid rgba(103, 126, 234, 0.5)'
-                  : '1px solid rgba(255, 255, 255, 0.2)',
+                border: category === '2025 Wrapped'
+                  ? (tvState.currentCategory === category
+                    ? '2px solid rgba(255, 215, 0, 0.6)'
+                    : '1px solid rgba(255, 255, 255, 0.4)')
+                  : (tvState.currentCategory === category 
+                    ? '1px solid rgba(103, 126, 234, 0.5)'
+                    : '1px solid rgba(255, 255, 255, 0.2)'),
                 color: 'white',
-                transition: 'all 0.2s ease',
+                textShadow: category === '2025 Wrapped' ? '0 0 10px rgba(255, 215, 0, 0.5)' : 'none',
+                animation: category === '2025 Wrapped' && tvState.currentCategory === category 
+                  ? 'pulse 2s ease-in-out infinite' : 'none',
+                transition: 'all 0.3s ease',
+                position: 'relative',
+                overflow: 'hidden',
+                '&::before': category === '2025 Wrapped' ? {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: '-100%',
+                  width: '100%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+                  animation: 'shimmer 3s ease-in-out infinite',
+                  zIndex: 1
+                } : {},
                 '&:hover': {
-                  background: tvState.currentCategory === category 
-                    ? 'linear-gradient(135deg, #5a67d8, #6b46c1)'
-                    : 'rgba(255, 255, 255, 0.2)',
-                  transform: 'translateY(-1px)',
-                  boxShadow: '0 5px 15px rgba(0, 0, 0, 0.2)'
+                  background: category === '2025 Wrapped'
+                    ? (tvState.currentCategory === category
+                      ? 'linear-gradient(135deg, #FFE55C 0%, #FF8A95 25%, #5BEFE5 50%, #52C8E8 75%, #B478D3 100%)'
+                      : 'linear-gradient(135deg, rgba(255, 215, 0, 0.4) 0%, rgba(255, 107, 107, 0.4) 25%, rgba(78, 205, 196, 0.4) 50%, rgba(69, 183, 209, 0.4) 75%, rgba(155, 89, 182, 0.4) 100%)')
+                    : (tvState.currentCategory === category 
+                      ? 'linear-gradient(135deg, #5a67d8, #6b46c1)'
+                      : 'rgba(255, 255, 255, 0.2)'),
+                  transform: category === '2025 Wrapped' ? 'translateY(-2px) scale(1.02)' : 'translateY(-1px)',
+                  boxShadow: category === '2025 Wrapped' 
+                    ? '0 8px 25px rgba(255, 215, 0, 0.4), 0 0 20px rgba(255, 107, 107, 0.2)'
+                    : '0 5px 15px rgba(0, 0, 0, 0.2)'
                 },
                 '&:active': {
                   transform: 'translateY(0px)'
                 },
                 '&:disabled': {
                   opacity: 0.4
+                },
+                '@keyframes pulse': {
+                  '0%, 100%': { boxShadow: '0 0 20px rgba(255, 215, 0, 0.3)' },
+                  '50%': { boxShadow: '0 0 30px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 107, 107, 0.3)' }
+                },
+                '@keyframes shimmer': {
+                  '0%': { left: '-100%' },
+                  '100%': { left: '100%' }
                 }
               }}
             >
-              {category}
+              {category === '2025 Wrapped' ? '🎊 ' + category + ' ✨' : category}
             </Button>
           ))}
         </Box>

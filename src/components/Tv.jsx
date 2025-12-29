@@ -10,6 +10,15 @@ export default function Tv() {
   const [showQRModal, setShowQRModal] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [tvId, setTvId] = useState('');
+  const wrappedBackgrounds = [
+    "https://storage.googleapis.com/pr-newsroom-wp/1/2024/12/Wrapped-FTRHeader-AIDJ-1-1920x733.png",
+    "https://uow.jamesmctaggart.com/content/images/size/w1000/2024/09/2.png",
+    "https://i.pinimg.com/originals/41/2f/d2/412fd244cd4636f2e009fa45b0514c7c.gif",
+    "https://cdn.prod.website-files.com/66e844e46ac8124ff5241362/66e844e46ac8124ff5241cda_wrapped-launch-header.jpg",
+    "https://storage.googleapis.com/pr-newsroom-wp/1/2022/11/MicrosoftTeams-image-2-768x381.png",
+    "https://i0.wp.com/playback.cubacchanal.com/wp-content/uploads/2023/12/cover.png"
+  ];
+  const [currentWrappedBackground, setCurrentWrappedBackground] = useState(`${wrappedBackgrounds[Math.floor(Math.random() * wrappedBackgrounds.length)]}`);
   const navigate = useNavigate();
   const {
     isOn,
@@ -22,19 +31,83 @@ export default function Tv() {
     numInput,
     currentCategoryvalue,
     allTvChannels,
+    // bugData
   } = useTvCustomHook();
 
   useEffect(() => {
     sessionStorage.setItem("powerState", JSON.stringify(isOn));
+    
+    // Add fade animation classes and transition for smooth background changes
+    document.body.style.transition = "all 1.5s cubic-bezier(0.4, 0, 0.2, 1)";
+    // document.body.classList.add('background-fade');
+    
+    // Add keyframe animations if not already added
+    if (!document.getElementById('background-animations')) {
+      const style = document.createElement('style');
+      style.textContent = `
+        .wrapped-background {
+          overflow-x: hidden;
+          transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+    // Remove previous animation classes
+    document.body.classList.remove('wrapped-background');
+    
     if (!isOn) {
       document.body.style.backgroundImage = "radial-gradient(#1c1616, #0e0000)";
-    } else
+    } else if (isOn && currentCategoryvalue !== "2025 Wrapped") {
       document.body.style.backgroundImage = "radial-gradient(#da7878, #5b0f0f)";
-    }, [isOn]);
+    }
+    else {
+      // Set initial wrapped background
+      const initialBg = wrappedBackgrounds[Math.floor(Math.random() * wrappedBackgrounds.length)];
+      setCurrentWrappedBackground(initialBg);
+      document.body.classList.add('wrapped-background');
+      document.body.style.backgroundImage = `url('${initialBg}')`;
+    }
+    
+    // Trigger reflow to restart animation
+    document.body.offsetHeight;
+    
+    }, [isOn, currentCategoryvalue]);
 
   useEffect(() => {
     sessionStorage.setItem("allchannels", JSON.stringify(allTvChannels));
   }, []);
+
+  // Handle automatic background changing for 2025 Wrapped
+  useEffect(() => {
+    let intervalId;
+    if (isOn && currentCategoryvalue === "2025 Wrapped") {
+      intervalId = setInterval(() => {
+        setCurrentWrappedBackground(prevBg => {
+          const currentIndex = wrappedBackgrounds.indexOf(prevBg);
+          const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % wrappedBackgrounds.length;
+          return wrappedBackgrounds[nextIndex];
+        });
+      }, 3000); // Change background every 3 seconds
+    }
+    
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [isOn, currentCategoryvalue]);
+
+  // Update background when currentWrappedBackground changes
+  useEffect(() => {
+    if (isOn && currentCategoryvalue === "2025 Wrapped") {
+      document.body.classList.add('wrapped-background');
+      document.body.style.backgroundImage = `url('${currentWrappedBackground}')`;
+    }
+  }, [currentWrappedBackground, isOn, currentCategoryvalue]);
   
   // Generate or retrieve TV ID
   useEffect(() => {
@@ -196,6 +269,11 @@ export default function Tv() {
   return (
     <div>
       <div className="tv">
+        {/* {bugData && (
+          <div className="absolute bottom-2 left-2 z-20 bg-red-800 bg-opacity-80 text-white px-3 py-2 rounded-lg shadow-lg max-w-s">
+            <div className="text-sm font-mono">Bug Report: {bugData.message}</div>
+          </div>
+        )} */}
         {/* TV ID Display - positioned at top left of screen */}
         <div className="absolute top-2 left-2 z-20 bg-gray-800 bg-opacity-80 text-white px-3 py-2 rounded-lg shadow-lg">
           <div className="text-sm font-mono">TV ID: {tvId}</div>

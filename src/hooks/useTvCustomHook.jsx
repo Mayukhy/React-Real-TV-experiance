@@ -139,21 +139,21 @@ export const TvProvider = ({ children }) => {
       id: "id_18",
       channelNo: 18,
       isplayimg: false,
-      category: "Romance",
+      category: "2025 Wrapped",
       videoUrl: "https://dummyurl.com/video18",
     },
     {
       id: "id_19",
       channelNo: 19,
       isplayimg: false,
-      category: "Romance",
+      category: "2025 Wrapped",
       videoUrl: "https://dummyurl.com/video19",
     },
     {
       id: "id_20",
       channelNo: 20,
       isplayimg: false,
-      category: "Romance",
+      category: "2025 Wrapped",
       videoUrl: "https://dummyurl.com/video20",
     },
   ]);
@@ -162,7 +162,7 @@ export const TvProvider = ({ children }) => {
   const [currentCategories, setCurrentCategories] = useState(
     myCategories
       ? myCategories
-      : ["Animal", "Entertainment", "Horror", "Nature", "Romance"]
+      : ["Animal", "Entertainment", "Horror", "Nature", "Romance", "2025 Wrapped"]
   );
   const [moreCategories, setMoreCategories] = useState(
     more_Categories
@@ -191,7 +191,7 @@ export const TvProvider = ({ children }) => {
   const [isCateEditable, setIsCateEditable] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const numbtns = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-  
+  // const [bugData,setBugData] = useState(null);
   useEffect(() =>{
    updateCategoryChannelList(currentCategoryvalue);
   },[currentCategoryvalue])
@@ -259,7 +259,11 @@ export const TvProvider = ({ children }) => {
             currentChannelId: nextChannel.id 
           });
         });
-        
+        // tvWebSocketService.onCommand('BUG_REPORT', (payload) => {
+        //   console.log('Received bug report from remote:', payload);
+        //   setBugData(payload);
+        //   // Here you can implement any additional logic to handle the bug report
+        // });
         tvWebSocketService.onCommand('CHANNEL_DOWN', (payload) => {
           // Filter channels based on the current category value
           const filteredChannels = getFilteredChannels(payload.channel.currentCategory);
@@ -390,7 +394,8 @@ export const TvProvider = ({ children }) => {
     setIsCateEditable,
     currentCategoryvalue,
     setCurrentCategoryValue,
-    isConnected
+    isConnected,
+    // bugData
   }), [
     allTvChannels,
     tvChannels,
@@ -403,7 +408,8 @@ export const TvProvider = ({ children }) => {
     isCateOn,
     isCateEditable,
     currentCategoryvalue,
-    isConnected
+    isConnected,
+    // bugData
   ]);
 
   return (
