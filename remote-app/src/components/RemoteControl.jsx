@@ -130,6 +130,10 @@ export default function RemoteControl() {
     // Set new timer to send channel after 2 seconds of inactivity
     const timer = setTimeout(() => {
       if (newInput) {
+        if (tvState.currentCategory === "2025 Wrapped" && newInput < 18){
+          setNumInput("");
+          return;
+        }
         remoteService.setChannel(parseInt(newInput), tvId);
         setNumInput("");
       }

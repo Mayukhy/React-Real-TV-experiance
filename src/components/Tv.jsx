@@ -9,16 +9,8 @@ export default function Tv() {
   const [chNoactiveClass, setChNoactiveClass] = useState("flex");
   const [showQRModal, setShowQRModal] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
-  const [tvId, setTvId] = useState('');
-  const wrappedBackgrounds = [
-    "https://storage.googleapis.com/pr-newsroom-wp/1/2024/12/Wrapped-FTRHeader-AIDJ-1-1920x733.png",
-    "https://uow.jamesmctaggart.com/content/images/size/w1000/2024/09/2.png",
-    "https://i.pinimg.com/originals/41/2f/d2/412fd244cd4636f2e009fa45b0514c7c.gif",
-    "https://cdn.prod.website-files.com/66e844e46ac8124ff5241362/66e844e46ac8124ff5241cda_wrapped-launch-header.jpg",
-    "https://storage.googleapis.com/pr-newsroom-wp/1/2022/11/MicrosoftTeams-image-2-768x381.png",
-    "https://i0.wp.com/playback.cubacchanal.com/wp-content/uploads/2023/12/cover.png"
-  ];
-  const [currentWrappedBackground, setCurrentWrappedBackground] = useState(`${wrappedBackgrounds[Math.floor(Math.random() * wrappedBackgrounds.length)]}`);
+  const [tvId, setTvId] = useState("");
+
   const navigate = useNavigate();
   const {
     isOn,
@@ -36,14 +28,14 @@ export default function Tv() {
 
   useEffect(() => {
     sessionStorage.setItem("powerState", JSON.stringify(isOn));
-    
+
     // Add fade animation classes and transition for smooth background changes
     document.body.style.transition = "all 1.5s cubic-bezier(0.4, 0, 0.2, 1)";
     // document.body.classList.add('background-fade');
-    
+
     // Add keyframe animations if not already added
-    if (!document.getElementById('background-animations')) {
-      const style = document.createElement('style');
+    if (!document.getElementById("background-animations")) {
+      const style = document.createElement("style");
       style.textContent = `
         .wrapped-background {
           overflow-x: hidden;
@@ -55,97 +47,71 @@ export default function Tv() {
       `;
       document.head.appendChild(style);
     }
-    
+
     // Remove previous animation classes
-    document.body.classList.remove('wrapped-background');
-    
+    document.body.classList.remove("wrapped-background");
+
     if (!isOn) {
       document.body.style.backgroundImage = "radial-gradient(#1c1616, #0e0000)";
     } else if (isOn && currentCategoryvalue !== "2025 Wrapped") {
       document.body.style.backgroundImage = "radial-gradient(#da7878, #5b0f0f)";
+    } else {
+      document.body.classList.add("wrapped-background");
     }
-    else {
-      // Set initial wrapped background
-      const initialBg = wrappedBackgrounds[Math.floor(Math.random() * wrappedBackgrounds.length)];
-      setCurrentWrappedBackground(initialBg);
-      document.body.classList.add('wrapped-background');
-      document.body.style.backgroundImage = `url('${initialBg}')`;
-    }
-    
+
     // Trigger reflow to restart animation
     document.body.offsetHeight;
-    
-    }, [isOn, currentCategoryvalue]);
+  }, [isOn, currentCategoryvalue]);
 
   useEffect(() => {
     sessionStorage.setItem("allchannels", JSON.stringify(allTvChannels));
   }, []);
 
-  // Handle automatic background changing for 2025 Wrapped
-  useEffect(() => {
-    let intervalId;
-    if (isOn && currentCategoryvalue === "2025 Wrapped") {
-      intervalId = setInterval(() => {
-        setCurrentWrappedBackground(prevBg => {
-          const currentIndex = wrappedBackgrounds.indexOf(prevBg);
-          const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % wrappedBackgrounds.length;
-          return wrappedBackgrounds[nextIndex];
-        });
-      }, 3000); // Change background every 3 seconds
-    }
-    
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [isOn, currentCategoryvalue]);
-
   // Update background when currentWrappedBackground changes
   useEffect(() => {
     if (isOn && currentCategoryvalue === "2025 Wrapped") {
-      document.body.classList.add('wrapped-background');
-      document.body.style.backgroundImage = `url('${currentWrappedBackground}')`;
+      document.body.classList.add("wrapped-background");
+      document.body.style.backgroundImage = `url('${currentChannel?.background}')`;
     }
-  }, [currentWrappedBackground, isOn, currentCategoryvalue]);
-  
+  }, [isOn, currentCategoryvalue, currentChannel]);
+
   // Generate or retrieve TV ID
   useEffect(() => {
-    let storedTvId = sessionStorage.getItem('tvId');
+    let storedTvId = sessionStorage.getItem("tvId");
     if (!storedTvId) {
       // Generate a unique TV ID
       const timestamp = Date.now().toString(36);
       const randomStr = Math.random().toString(36).substr(2, 5);
       storedTvId = `TV-${timestamp}-${randomStr}`.toUpperCase();
-      sessionStorage.setItem('tvId', storedTvId);
+      sessionStorage.setItem("tvId", storedTvId);
     }
     setTvId(storedTvId);
-    
+
     // Listen for remote validation events
     const handleRemoteValidated = (event) => {
-      console.log('Remote validated, closing QR modal:', event.detail);
+      console.log("Remote validated, closing QR modal:", event.detail);
       setShowQRModal(false);
     };
-    
-    window.addEventListener('remoteValidated', handleRemoteValidated);
-    
+
+    window.addEventListener("remoteValidated", handleRemoteValidated);
+
     // Cleanup on unmount
     return () => {
-      window.removeEventListener('remoteValidated', handleRemoteValidated);
+      window.removeEventListener("remoteValidated", handleRemoteValidated);
     };
   }, []);
-  
+
   useEffect(() => {
     if (!params?.id || !tvChannels || tvChannels.length === 0) return;
 
     const channelNo = Number(params.id);
-    
+
     // Validate the `id` parameter and navigate if necessary
     if (channelNo === 0) {
       navigate(`/channel/1`);
       return;
     }
-    
+
     if (channelNo > tvChannels.length && currentCategoryvalue === "All") {
       navigate(`/channel/${tvChannels.length}`);
       return;
@@ -164,10 +130,10 @@ export default function Tv() {
         JSON.stringify(tvChannels[currentIndex])
       );
     } else {
-      return
+      return;
     }
   }, [params?.id]);
-  
+
   useEffect(() => {
     setChNoactiveClass("flex");
     setTimeout(() => {
@@ -178,25 +144,27 @@ export default function Tv() {
       clearTimeout(3000);
     };
   }, [params?.id]);
-  
-  useEffect(() => {
-    navigate(`/channel/${currentChannel?.channelNo}`);
-  },[sessionStorage.getItem("currentchannel")]);
 
   useEffect(() => {
-    if( currentCategoryvalue !== "All" ) {
+    navigate(`/channel/${currentChannel?.channelNo}`);
+  }, [sessionStorage.getItem("currentchannel")]);
+
+  useEffect(() => {
+    if (currentCategoryvalue !== "All") {
       setTimeout(() => {
         navigate(`/channel/${tvChannels[0]?.channelNo}`);
       }, 1000);
       return () => clearTimeout();
     }
-  },[tvChannels])
+  }, [tvChannels]);
 
   // Memoize filtered channels for current category
   const filteredChannels = useMemo(() => {
     return currentCategoryvalue === "All"
       ? tvChannels
-      : tvChannels.filter(channel => channel?.category === currentCategoryvalue);
+      : tvChannels.filter(
+          (channel) => channel?.category === currentCategoryvalue
+        );
   }, [tvChannels, currentCategoryvalue]);
 
   // handle the tv's on off state
@@ -227,45 +195,84 @@ export default function Tv() {
   }, []);
 
   //channel changing function using channel up down buttons
-  const channelChangeHandeler = useCallback((direction) => {
-    if (!filteredChannels || filteredChannels.length === 0) return; // If no channels, do nothing
+  const channelChangeHandeler = useCallback(
+    (direction) => {
+      if (!filteredChannels || filteredChannels.length === 0) return; // If no channels, do nothing
 
-    if (filteredChannels.length === 0) {
-      console.error("No channels found for the selected category");
-      return; // Exit if no channels match the filter
+      if (filteredChannels.length === 0) {
+        console.error("No channels found for the selected category");
+        return; // Exit if no channels match the filter
+      }
+
+      // Find the current index in the appropriate array
+      const currentIndex = filteredChannels.findIndex(
+        (channel) => channel.id === currentChannelId
+      );
+
+      if (currentIndex === -1) {
+        console.error("Current channel not found in the filtered list");
+        return; // Exit if the current channel is not found
+      }
+
+      if (direction === "next") {
+        const nextIndex = (currentIndex + 1) % filteredChannels.length; // Loop to the first channel if at the last one
+        const nextChannel = filteredChannels[nextIndex];
+
+        setCurrentChannelId(nextChannel?.id);
+        setCurrentChannel(nextChannel);
+        sessionStorage.setItem("currentchannel", JSON.stringify(nextChannel));
+        navigate(`/channel/${nextChannel?.channelNo}`); // Use the channel number for navigation
+      } else if (direction === "prev") {
+        const prevIndex =
+          (currentIndex - 1 + filteredChannels.length) %
+          filteredChannels.length; // Loop to the last channel if at the first one
+        const prevChannel = filteredChannels[prevIndex];
+
+        setCurrentChannelId(prevChannel?.id);
+        setCurrentChannel(prevChannel);
+        sessionStorage.setItem("currentchannel", JSON.stringify(prevChannel));
+        navigate(`/channel/${prevChannel?.channelNo}`); // Use the channel number for navigation
+      }
+    },
+    [filteredChannels, currentChannelId, setCurrentChannelId, setCurrentChannel]
+  );
+
+  const showChannelData = useCallback(() => {
+    if (!currentChannel) return;
+    // Logic to display channel data on the TV screen
+    switch (currentChannel.channelNo) {
+      case 18:
+        return "January Special";
+      case 19:
+        return "February Special";
+      case 20:
+        return "March Special";
+      case 21:
+        return "April Special";
+      case 22:
+        return "May Special";
+      case 23:
+        return "June Special";
+      case 24:
+        return "July Special";
+      case 25:
+        return "August Special";
+      case 26:
+        return "September Special";
+      case 27:
+        return "October Special";
+      case 28:
+        return "November Special";
+      case 29:
+        return "December Special";
+      default:
+        return `${
+          currentChannel?.channelNo.toString().split("").length === 2
+            ? currentChannel?.channelNo
+            : `0` + currentChannel?.channelNo
+        }`;
     }
-
-    // Find the current index in the appropriate array
-    const currentIndex = filteredChannels.findIndex(
-      (channel) => channel.id === currentChannelId
-    );
-
-    if (currentIndex === -1) {
-      console.error("Current channel not found in the filtered list");
-      return; // Exit if the current channel is not found
-    }
-
-    if (direction === "next") {
-      const nextIndex = (currentIndex + 1) % filteredChannels.length; // Loop to the first channel if at the last one
-      const nextChannel = filteredChannels[nextIndex];
-
-      setCurrentChannelId(nextChannel?.id);
-      setCurrentChannel(nextChannel);
-      sessionStorage.setItem("currentchannel", JSON.stringify(nextChannel));
-      navigate(`/channel/${nextChannel?.channelNo}`); // Use the channel number for navigation
-
-    } else if (direction === "prev") {
-      const prevIndex =
-        (currentIndex - 1 + filteredChannels.length) % filteredChannels.length; // Loop to the last channel if at the first one
-      const prevChannel = filteredChannels[prevIndex];
-
-      setCurrentChannelId(prevChannel?.id);
-      setCurrentChannel(prevChannel);
-      sessionStorage.setItem("currentchannel", JSON.stringify(prevChannel));
-      navigate(`/channel/${prevChannel?.channelNo}`); // Use the channel number for navigation
-    }
-  }, [filteredChannels, currentChannelId, setCurrentChannelId, setCurrentChannel]);
-
+  }, [currentChannel, numInput]);
   return (
     <div>
       <div className="tv">
@@ -286,8 +293,18 @@ export default function Tv() {
           title="How to Connect Remote"
         >
           <div className="flex items-center space-x-2">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span className="text-sm font-semibold hidden sm:block">Help</span>
           </div>
@@ -300,10 +317,22 @@ export default function Tv() {
           title="Show QR Code for Remote Access"
         >
           <div className="flex items-center space-x-2">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
+              />
             </svg>
-            <span className="text-sm font-semibold hidden sm:block">QR Code</span>
+            <span className="text-sm font-semibold hidden sm:block">
+              QR Code
+            </span>
           </div>
         </button>
 
@@ -314,8 +343,18 @@ export default function Tv() {
               <div className="p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-                    <svg className="w-6 h-6 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    <svg
+                      className="w-6 h-6 mr-2 text-blue-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
                     </svg>
                     Connect Your Remote
                   </h2>
@@ -326,20 +365,30 @@ export default function Tv() {
                     ×
                   </button>
                 </div>
-                
+
                 <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-2">
                   <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
-                    <h3 className="font-semibold text-blue-800 mb-2">📱 Method: QR Code</h3>
+                    <h3 className="font-semibold text-blue-800 mb-2">
+                      📱 Method: QR Code
+                    </h3>
                     <ol className="list-decimal list-inside space-y-2 text-sm text-blue-700">
-                      <li>Click the <span className="bg-blue-500 text-white px-2 py-1 rounded text-xs">QR</span> button (top right)</li>
+                      <li>
+                        Click the{" "}
+                        <span className="bg-blue-500 text-white px-2 py-1 rounded text-xs">
+                          QR
+                        </span>{" "}
+                        button (top right)
+                      </li>
                       <li>Open camera app on your phone</li>
                       <li>Scan the QR code displayed</li>
                       <li>Open the remote control link</li>
                     </ol>
                   </div>
-                  
+
                   <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
-                    <h3 className="font-semibold text-yellow-800 mb-2">✨ Features</h3>
+                    <h3 className="font-semibold text-yellow-800 mb-2">
+                      ✨ Features
+                    </h3>
                     <ul className="list-disc list-inside space-y-1 text-sm text-yellow-700">
                       <li>Control TV power on/off</li>
                       <li>Change channels up/down</li>
@@ -347,9 +396,11 @@ export default function Tv() {
                       <li>Real-time synchronization</li>
                     </ul>
                   </div>
-                  
+
                   <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
-                    <h3 className="font-semibold text-red-800 mb-2">⚠️ Troubleshooting</h3>
+                    <h3 className="font-semibold text-red-800 mb-2">
+                      ⚠️ Troubleshooting
+                    </h3>
                     <ul className="list-disc list-inside space-y-1 text-sm text-red-700">
                       <li>Ensure same WiFi network</li>
                       <li>Check TV ID matches exactly</li>
@@ -358,7 +409,7 @@ export default function Tv() {
                     </ul>
                   </div>
                 </div>
-                
+
                 <div className="mt-6 flex justify-center">
                   <button
                     onClick={handleCloseInstructions}
@@ -410,17 +461,18 @@ export default function Tv() {
                         <div
                           className={`absolute right-0 m-4 font-semibold text-green-400 text-2xl z-10 ${chNoactiveClass}`}
                         >
-                          {currentChannel?.channelNo.toString().split("")
-                            .length === 2
-                            ? currentChannel?.channelNo
-                            : `0` + currentChannel?.channelNo}
+                          {showChannelData()}
                         </div>
                         <div className="h-full w-full flex justify-center items-center relative">
                           <video
                             autoPlay
                             loop
                             className="absolute inset-0 object-cover w-full h-full"
-                            src={`/channels/ved${currentChannel?.channelNo}.mp4`}
+                            src={
+                              currentChannel.category === "2025 Wrapped"
+                                ? currentChannel.videoUrl
+                                : `/channels/ved${currentChannel?.channelNo}.mp4`
+                            }
                           ></video>
                         </div>
                       </>
@@ -550,12 +602,12 @@ export default function Tv() {
         tvStateHandeler={tvStateHandeler}
         channelChangeHandeler={channelChangeHandeler}
       />
-      
+
       {/* QR Code Modal */}
-      <QRCodeModal 
-        isOpen={showQRModal} 
-        onClose={handleCloseQRModal} 
-        tvId={tvId} 
+      <QRCodeModal
+        isOpen={showQRModal}
+        onClose={handleCloseQRModal}
+        tvId={tvId}
       />
     </div>
   );

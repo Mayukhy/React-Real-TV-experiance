@@ -140,21 +140,96 @@ export const TvProvider = ({ children }) => {
       channelNo: 18,
       isplayimg: false,
       category: "2025 Wrapped",
-      videoUrl: "https://dummyurl.com/video18",
+      videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092782/jan_uqkfpw.mp4",
+      background: "https://storage.googleapis.com/pr-newsroom-wp/1/2024/12/Wrapped-FTRHeader-AIDJ-1-1920x733.png"
     },
     {
       id: "id_19",
       channelNo: 19,
       isplayimg: false,
       category: "2025 Wrapped",
-      videoUrl: "https://dummyurl.com/video19",
+      videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092774/feb_jjxixe.mp4",
+      background: "https://uow.jamesmctaggart.com/content/images/size/w1000/2024/09/2.png"
     },
     {
       id: "id_20",
       channelNo: 20,
       isplayimg: false,
       category: "2025 Wrapped",
-      videoUrl: "https://dummyurl.com/video20",
+      videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092790/march_dszonu.mp4",
+      background: "https://cdn.prod.website-files.com/66e844e46ac8124ff5241362/66e844e46ac8124ff5241cda_wrapped-launch-header.jpg"
+    },
+    {
+      id: "id_21",
+      channelNo: 21,
+      isplayimg: false,
+      category: "2025 Wrapped",
+      videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092724/april_qcca89.mp4",
+      background: "https://i0.wp.com/playback.cubacchanal.com/wp-content/uploads/2023/12/cover.png"
+    },
+    {
+      id: "id_22",
+      channelNo: 22,
+      isplayimg: false,
+      category: "2025 Wrapped",
+      videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092820/may_zqkvpa.mp4",
+      background: "https://cdntc.mpanchang.com/mpnc/images/remedy/happy-newyear-wishes-Gif-Image.gif"
+    },
+    {
+      id: "id_23",
+      channelNo: 23,
+      isplayimg: false,
+      category: "2025 Wrapped",
+      videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092801/june_mmwbrr.mp4",
+      background: "https://static.vecteezy.com/system/resources/thumbnails/034/221/775/original/animation-of-happy-chinese-new-year-with-lantern-on-white-background-free-video.jpg"
+    },
+    {
+      id: "id_24",
+      channelNo: 24,
+      isplayimg: false,
+      category: "2025 Wrapped",
+      videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092765/july_nqr3fg.mp4",
+      background: "https://i.pinimg.com/originals/37/5f/e3/375fe33361b6946674cbef276ab67b1d.gif"
+    },
+    {
+      id: "id_25",
+      channelNo: 25,
+      isplayimg: false,
+      category: "2025 Wrapped",
+      videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092789/aug_rddz0l.mp4",
+      background: "https://images.squarespace-cdn.com/content/v1/54f4bb5ce4b04b99e2ff988b/1540247825096-JF191UV60A03MCQRDG9M/dai+truths+anim+lg.gif"
+    },
+    {
+      id: "id_26",
+      channelNo: 26,
+      isplayimg: false,
+      category: "2025 Wrapped",
+      videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092808/sept_au5xvw.mp4",
+      background: "https://cliply.co/wp-content/uploads/2019/02/371812620_FIREWORKS_400.gif"
+    },
+    {
+      id: "id_27",
+      channelNo: 27,
+      isplayimg: false,
+      category: "2025 Wrapped",
+      videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092750/oct_z3z4od.mp4",
+      background: "https://media3.giphy.com/headers/clubdoauto/fjDIBvQjjE3G.gif"
+    },
+    {
+      id: "id_28",
+      channelNo: 28,
+      isplayimg: false,
+      category: "2025 Wrapped",
+      videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092792/nov_quyyts.mp4",
+      background: "https://media0.giphy.com/media/v1.Y2lkPTZjMDliOTUybTlkeHd3bnB1ZWhtMjVpdHk4eWhieTBuN2V2a281MzY2dGc5Zng2MCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l4KihuqeuJEi9qLSM/giphy.gif"
+    },
+    {
+      id: "id_29",
+      channelNo: 29,
+      isplayimg: false,
+      category: "2025 Wrapped",
+      videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092733/dec_onhpwc.mp4",
+      background: "https://i.pinimg.com/originals/41/2f/d2/412fd244cd4636f2e009fa45b0514c7c.gif"
     },
   ]);
 
@@ -217,6 +292,7 @@ export const TvProvider = ({ children }) => {
             
             const channelNo = Number(payload.channelNo);
             const channel = tvChannels.find(ch => ch.channelNo === channelNo);
+            console.log("channel", channel);
             if (channel) {
               setCurrentChannel(channel);
               setCurrentChannelId(channel.id);

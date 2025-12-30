@@ -7,7 +7,7 @@ import CategoryIcon from "@mui/icons-material/Category";
 import { useTvCustomHook } from "../hooks/useTvCustomHook";
 
 export default function Remote({ channelChangeHandeler, tvStateHandeler }) {
-  const { numbtns, tvChannels, isCateOn, setIsCateOn, isOn, setNumInput } =
+  const { numbtns, tvChannels, isCateOn, setIsCateOn, isOn, setNumInput, allTvChannels } =
     useTvCustomHook();
   const [numArr, setNumArr] = useState([]);
   const [isHovered, setIsHovered] = useState(false);
@@ -17,7 +17,8 @@ export default function Remote({ channelChangeHandeler, tvStateHandeler }) {
   const setChannelNo = useCallback((no) => {
     const updatedNumArr = [...numArr, no];
     const channelNo = updatedNumArr.join("");
-
+    console.log(channelNo);
+    
     // Allow up to 3 digits
     if (channelNo.length > 3) return;
 
@@ -30,7 +31,12 @@ export default function Remote({ channelChangeHandeler, tvStateHandeler }) {
     }
 
     const navigateToChannel = () => {
-      if (channelNo <= tvChannels.length) {
+      const isPresent = tvChannels.some(channel => channel.id === `id_${channelNo}`);
+      if (!isPresent) {
+        resetInput();
+        return;
+      }
+      if (channelNo <= allTvChannels.length) {
         navigate(`/channel/${channelNo}`);
       } else {
         navigate(`/channel/${tvChannels?.length}`);
