@@ -36,6 +36,7 @@ export default function Tv() {
     // Add keyframe animations if not already added
     if (!document.getElementById("background-animations")) {
       const style = document.createElement("style");
+      style.id = "background-animations";
       style.textContent = `
         .wrapped-background {
           overflow-x: hidden;
@@ -43,6 +44,36 @@ export default function Tv() {
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
+        }
+        
+        .upside-down-tv {
+          animation: eerie-glow 2s infinite alternate;
+        }
+        
+        .upside-down-crt {
+          box-shadow: inset 0 0 100px rgba(139, 0, 0, 0.3), 
+                      0 0 50px rgba(139, 0, 0, 0.5);
+          border: 2px solid rgba(139, 0, 0, 0.6);
+        }
+        
+        @keyframes eerie-glow {
+          0% { 
+            filter: drop-shadow(0 0 20px rgba(139, 0, 0, 0.6)) 
+                    drop-shadow(0 0 40px rgba(139, 0, 0, 0.3));
+          }
+          100% { 
+            filter: drop-shadow(0 0 40px rgba(139, 0, 0, 0.9)) 
+                    drop-shadow(0 0 80px rgba(139, 0, 0, 0.6));
+          }
+        }
+        
+        @keyframes flicker {
+          0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+            opacity: 1;
+          }
+          20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+            opacity: 0.4;
+          }
         }
       `;
       document.head.appendChild(style);
@@ -265,6 +296,8 @@ export default function Tv() {
         return "November Special";
       case 29:
         return "December Special";
+      case 30:
+        return "New Year's Eve";
       default:
         return `${
           currentChannel?.channelNo.toString().split("").length === 2
@@ -424,17 +457,31 @@ export default function Tv() {
         )}
 
         <div
-          style={{ transform: "translate(-50%,-50%)" }}
-          className="television-container rounded-2xl absolute top-[50%] left-[50%]"
+          style={{ 
+            transform: currentChannel?.channelNo === 30 
+              ? "translate(-50%,-50%) scale(1.08)"
+              : "translate(-50%,-50%)",
+            transition: "all 1s cubic-bezier(0.4, 0, 0.2, 1)",
+            filter: currentChannel?.channelNo === 30 
+              ? "drop-shadow(0 0 30px rgba(139, 0, 0, 0.8)) drop-shadow(0 0 60px rgba(139, 0, 0, 0.4))" 
+              : "none"
+          }}
+          className={`television-container rounded-2xl absolute top-[50%] left-[50%] ${
+            currentChannel?.channelNo === 30 ? 'upside-down-tv animate-pulse' : ''
+          }`}
         >
           <div className="antenna-container">
             <div className="antenna"></div>
           </div>
-          <div className="television">
-            <div className="television-inner">
+          <div className={`television ${ currentChannel?.channelNo === 30 ? "!w-[700px] !h-[500px]" : ""}`}>
+            <div className={`television-inner ${ currentChannel?.channelNo === 30 ? "!grid-cols-[8fr_1fr] !grid-rows-[0.9fr]" : ""}`}>
               <div className="television-screen-container">
-                <div className="television-crt">
-                  <div className="television-screen relative w-full h-full">
+                <div className={`television-crt ${
+                  currentChannel?.channelNo === 30 ? 'upside-down-crt' : ''
+                }`}>
+                  <div className={`television-screen relative w-full h-full ${
+                    currentChannel?.channelNo === 30 ? 'upside-down-screen' : ''
+                  }`}>
                     {/* only show this when tv is on  */}
                     {isOn && (
                       <>
@@ -459,15 +506,36 @@ export default function Tv() {
                           {numInput}
                         </div>
                         <div
-                          className={`absolute right-0 m-4 font-semibold text-green-400 text-2xl z-10 ${chNoactiveClass}`}
+                          className={`absolute right-0 m-4 font-semibold ${currentChannel.channelNo === 30 ?"text-rose-500" : "text-green-400"} text-2xl z-10 ${chNoactiveClass}`}
                         >
                           {showChannelData()}
                         </div>
                         <div className="h-full w-full flex justify-center items-center relative">
+                          {/* Special overlay for channel 30 */}
+                          {currentChannel?.channelNo === 30 && (
+                            <>
+                              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-red-900/20 to-black/40 z-10 animate-pulse"></div>
+                              <div className="absolute inset-0 bg-red-900/10 z-10 opacity-60 animate-ping"></div>
+                              <div className="absolute inset-0 z-10" 
+                                   style={{
+                                     background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 0, 0, 0.1) 2px, rgba(139, 0, 0, 0.1) 4px)',
+                                     animation: 'flicker 0.15s infinite linear alternate'
+                                   }}>
+                              </div>
+                            </>
+                          )}
                           <video
                             autoPlay
                             loop
-                            className="absolute inset-0 object-cover w-full h-full"
+                            className={`absolute inset-0 object-cover w-full h-full ${
+                              currentChannel?.channelNo === 30 
+                                ? 'filter brightness-75 contrast-125 saturate-50 hue-rotate-15' 
+                                : ''
+                            }`}
+                            style={{
+                              transform: currentChannel?.channelNo === 30 ? 'scale(1.05)' : 'scale(1)',
+                              transition: 'all 0.5s ease-in-out'
+                            }}
                             src={
                               currentChannel.category === "2025 Wrapped"
                                 ? currentChannel.videoUrl
@@ -480,7 +548,7 @@ export default function Tv() {
                   </div>
                 </div>
               </div>
-              <div className="television-lateral">
+              <div className={`television-lateral ${ currentChannel.channelNo === 30 ? "w-[50px]" : ""}`}>
                 <div className="dial-container">
                   <div className="dial channel-button">
                     <div className="data-container">

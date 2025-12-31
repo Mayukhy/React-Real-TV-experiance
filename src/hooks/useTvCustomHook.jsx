@@ -141,7 +141,7 @@ export const TvProvider = ({ children }) => {
       isplayimg: false,
       category: "2025 Wrapped",
       videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092782/jan_uqkfpw.mp4",
-      background: "https://storage.googleapis.com/pr-newsroom-wp/1/2024/12/Wrapped-FTRHeader-AIDJ-1-1920x733.png"
+      background: "/bgs/jan.png"
     },
     {
       id: "id_19",
@@ -149,7 +149,7 @@ export const TvProvider = ({ children }) => {
       isplayimg: false,
       category: "2025 Wrapped",
       videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092774/feb_jjxixe.mp4",
-      background: "https://uow.jamesmctaggart.com/content/images/size/w1000/2024/09/2.png"
+      background: "/bgs/feb.png"
     },
     {
       id: "id_20",
@@ -157,7 +157,7 @@ export const TvProvider = ({ children }) => {
       isplayimg: false,
       category: "2025 Wrapped",
       videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092790/march_dszonu.mp4",
-      background: "https://cdn.prod.website-files.com/66e844e46ac8124ff5241362/66e844e46ac8124ff5241cda_wrapped-launch-header.jpg"
+      background: "/bgs/mar.jpg"
     },
     {
       id: "id_21",
@@ -165,7 +165,7 @@ export const TvProvider = ({ children }) => {
       isplayimg: false,
       category: "2025 Wrapped",
       videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092724/april_qcca89.mp4",
-      background: "https://i0.wp.com/playback.cubacchanal.com/wp-content/uploads/2023/12/cover.png"
+      background: "/bgs/april.webp"
     },
     {
       id: "id_22",
@@ -173,7 +173,7 @@ export const TvProvider = ({ children }) => {
       isplayimg: false,
       category: "2025 Wrapped",
       videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092820/may_zqkvpa.mp4",
-      background: "https://cdntc.mpanchang.com/mpnc/images/remedy/happy-newyear-wishes-Gif-Image.gif"
+      background: "/bgs/may.gif"
     },
     {
       id: "id_23",
@@ -181,7 +181,7 @@ export const TvProvider = ({ children }) => {
       isplayimg: false,
       category: "2025 Wrapped",
       videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092801/june_mmwbrr.mp4",
-      background: "https://static.vecteezy.com/system/resources/thumbnails/034/221/775/original/animation-of-happy-chinese-new-year-with-lantern-on-white-background-free-video.jpg"
+      background: "/bgs/june.jpg"
     },
     {
       id: "id_24",
@@ -189,7 +189,7 @@ export const TvProvider = ({ children }) => {
       isplayimg: false,
       category: "2025 Wrapped",
       videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092765/july_nqr3fg.mp4",
-      background: "https://i.pinimg.com/originals/37/5f/e3/375fe33361b6946674cbef276ab67b1d.gif"
+      background: "/bgs/july.gif"
     },
     {
       id: "id_25",
@@ -197,7 +197,7 @@ export const TvProvider = ({ children }) => {
       isplayimg: false,
       category: "2025 Wrapped",
       videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092789/aug_rddz0l.mp4",
-      background: "https://images.squarespace-cdn.com/content/v1/54f4bb5ce4b04b99e2ff988b/1540247825096-JF191UV60A03MCQRDG9M/dai+truths+anim+lg.gif"
+      background: "/bgs/aug.gif"
     },
     {
       id: "id_26",
@@ -205,7 +205,7 @@ export const TvProvider = ({ children }) => {
       isplayimg: false,
       category: "2025 Wrapped",
       videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092808/sept_au5xvw.mp4",
-      background: "https://cliply.co/wp-content/uploads/2019/02/371812620_FIREWORKS_400.gif"
+      background: "/bgs/sept.gif"
     },
     {
       id: "id_27",
@@ -213,7 +213,7 @@ export const TvProvider = ({ children }) => {
       isplayimg: false,
       category: "2025 Wrapped",
       videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092750/oct_z3z4od.mp4",
-      background: "https://media3.giphy.com/headers/clubdoauto/fjDIBvQjjE3G.gif"
+      background: "/bgs/oct.gif"
     },
     {
       id: "id_28",
@@ -221,7 +221,7 @@ export const TvProvider = ({ children }) => {
       isplayimg: false,
       category: "2025 Wrapped",
       videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092792/nov_quyyts.mp4",
-      background: "https://media0.giphy.com/media/v1.Y2lkPTZjMDliOTUybTlkeHd3bnB1ZWhtMjVpdHk4eWhieTBuN2V2a281MzY2dGc5Zng2MCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l4KihuqeuJEi9qLSM/giphy.gif"
+      background: "/bgs/nov.webp"
     },
     {
       id: "id_29",
@@ -229,7 +229,15 @@ export const TvProvider = ({ children }) => {
       isplayimg: false,
       category: "2025 Wrapped",
       videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767092733/dec_onhpwc.mp4",
-      background: "https://i.pinimg.com/originals/41/2f/d2/412fd244cd4636f2e009fa45b0514c7c.gif"
+      background: "/bgs/dec.gif"
+    },
+    {
+      id: "id_30",
+      channelNo: 30,
+      isplayimg: false,
+      category: "2025 Wrapped",
+      videoUrl: "https://res.cloudinary.com/dgj8xqbxt/video/upload/v1767158218/Stranger_Things_5_Hindi_Finale_Trailer_Netflix_India_-_Netflix_India_720p_h264_ikg79f.mp4",
+      background: "/bgs/st5.gif"
     },
   ]);
 
